@@ -1,0 +1,16 @@
+https://www.mdpi.com/1424-8220/20/19/5669
+https://www.sciencedirect.com/science/article/pii/S1388245707000879
+https://event.dlr.de/en/ila2022/ems/
+https://pmc.ncbi.nlm.nih.gov/articles/PMC6700209/#S4
+
+Waveform:
+	Biphasic rectangular waveform
+	
+Pulse width:
+	Between 100 us and 400 us
+	
+Frequency:
+	Range from 10 Hz to 60 Hz
+	
+Amplitude
+	0-100 mA
