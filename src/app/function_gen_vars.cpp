@@ -1,18 +1,18 @@
-#include "function_gen_vars.h"
+#include "app/function_gen_vars.h"
 
 /*
 *   Func generator variables that are inaccessible outside of this file
 */
 static struct funcGenVars_t funcGenVars;
 static struct funcGenVars_t funcGenVars_MIN = {
-    .amp = 0,
+    .pulseWidth = 100,
     .freq = 10,
-    .pulseWidth = 100
+    .amp = 0
 };
 static struct funcGenVars_t funcGenVars_MAX = {
-    .amp = 100,
+    .pulseWidth = 400,
     .freq = 60,
-    .pulseWidth = 400
+    .amp = 100
 };
 
 /*

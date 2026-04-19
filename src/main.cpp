@@ -1,28 +1,28 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
-#include <http_reqs.h>
+#include "app/http_reqs.h"
+#include "hal/bluetooth.h"
 
 #define MAX_ATTEMPT_COUNT 10
 
-const char* WiFi_SSID = "UPC4D8A1AB";
-const char* WiFi_PASS = "avzBed3jhsdx";
+//const char* WiFi_SSID = "UPC4D8A1AB";
+//const char* WiFi_PASS = "avzBed3jhsdx";
+const char* WiFi_SSID = "Vodafone-2B15";
+const char* WiFi_PASS = "7P3NtMhhbgTp8pUB";
 
 int lightDelay = 10;
 
 WiFiServer server;
 
 // put function declarations here:
-int myFunction(int, int);
 void scanNetworks();
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
   
-  pinMode(18, OUTPUT);
+  pinMode(21, OUTPUT);
 
-  digitalWrite(18, LOW);
+  analogWrite(21, 128);
   
   // Serial
   Serial.begin(9600);
@@ -62,6 +62,9 @@ void setup() {
   server = WiFiServer(80);
   server.begin();
   Serial.println("Server started");
+
+  // Setting up bluetooth
+  HAL_SetupBluetooth();
 
 }
 
@@ -167,11 +170,6 @@ void loop() {
   */
 
   
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
 }
 
 void scanNetworks() {
