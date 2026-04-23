@@ -50,6 +50,12 @@ enum Errors setFreq(unsigned int);
 enum Errors setAmp(double);
 
 /*
+*   HAL Interface functions
+*/
+void APP_LoopFuncGen();
+void APP_SetupFuncGen();
+
+/*
 *   Other useful function generator related functions
 */
 void printFuncGenVars();

@@ -23,6 +23,7 @@ enum UUID_TYPE {
 struct characteristic_settings {
     const char *name;
     const char* uuid;
+    const enum Char_UUID_Index uuid_ind;
     const enum UUID_TYPE uuid_type;
     const uint32_t properties;
 };
@@ -30,7 +31,7 @@ struct characteristic_settings {
 struct service_settings {
     const char *name;
     const char* uuid;
-    const enum UUID_TYPE uuid_type;
+    enum UUID_TYPE uuid_type;
     const int characteristic_count;
     const struct characteristic_settings characteristics[];
 };
@@ -50,24 +51,28 @@ static constexpr struct service_settings s_s_1 {
         {
             .name = "Waveform Type",
             .uuid = char_uuid_map[WAVEFORM],
+            .uuid_ind = WAVEFORM,
             .uuid_type = CUSTOM,
             .properties = BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
         },
         {
             .name = "Frequency [Hz]",
             .uuid = char_uuid_map[FREQUENCY],
+            .uuid_ind = FREQUENCY,
             .uuid_type = CUSTOM,
             .properties = BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
         },
         {
             .name = "Pulse Width [%]",
             .uuid = char_uuid_map[PULSEWIDTH],
+            .uuid_ind = PULSEWIDTH,
             .uuid_type = CUSTOM,
             .properties = BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
         },
         {
             .name = "Amplitude [mA]",
             .uuid = char_uuid_map[AMPLITUDE],
+            .uuid_ind = AMPLITUDE,
             .uuid_type = CUSTOM,
             .properties = BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
         }

@@ -8,5 +8,5 @@
 
 void HAL_SetupBluetooth();
 
-std::__cxx11::string getCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI);
+std::string getCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI);
 void setCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI, const char *val);
