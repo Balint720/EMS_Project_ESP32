@@ -3,6 +3,8 @@
 #include "hal/bluetooth_settings.h"
 #include "hal/bluetooth_callbacks.h"
 
+#include "sys/sys.h"
+
 #include <Arduino.h>
 
 #include <BLEDevice.h>
@@ -21,7 +23,7 @@ void clientDisconnectCallback();
 *   Bluetooth Setup for Hardware Layer
 */
 void HAL_SetupBluetooth() {
-    Serial.println("Setting up Bluetooth Low Energy");
+    debug_print("Setting up Bluetooth Low Energy\n");
 
     BLEDevice::init(b_s.device_name);
     
@@ -42,9 +44,11 @@ void HAL_SetupBluetooth() {
             // Maybe should consider not using C memory allocation...
             pCharacteristics[i] = (BLECharacteristic**)malloc(sizeof(*pCharacteristics) * curr_s_s->characteristic_count);
 
+            debug_print("Characteristic count: %d\n", curr_s_s->characteristic_count);
             for (int j = 0; j < curr_s_s->characteristic_count; j++) {
                 // Save current to make more readable
                 const struct characteristic_settings *curr_c_s = &curr_s_s->characteristics[j];
+                debug_print("Current characteristic being set: %s\n", curr_c_s->name);
 
                 pCharacteristics[i][j] = pServices[i]->createCharacteristic(bl_settings_getUUID(curr_c_s), curr_c_s->properties);
                 
@@ -106,7 +110,6 @@ std::string getCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI) {
         Serial.println("ERROR: Characteristic with given uuid doesn't exist.");
         return "";
     }
-    Serial.printf("Sending characteristic value %x\n", pChar->getValue());
     return pChar->getValue();
 }
 

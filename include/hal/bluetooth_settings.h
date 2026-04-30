@@ -1,112 +1,128 @@
 #pragma once
 
 /*
-*   Bluetooth configuration file
+*   Bluetooth configuration file (safe version)
 */
 
 #include "hal/bluetooth_uuid.h"
-
 #include <cstdint>
 #include <BLECharacteristic.h>
 
-
-union uuid_t {
-    char sig[4+1];
-    char custom[32+4+1];
-};
-
+/*
+*   UUID type
+*/
 enum UUID_TYPE {
     SIG,
     CUSTOM
 };
 
+/*
+*   Characteristic settings
+*/
 struct characteristic_settings {
     const char *name;
-    const char* uuid;
-    const enum Char_UUID_Index uuid_ind;
-    const enum UUID_TYPE uuid_type;
-    const uint32_t properties;
+    const char *uuid;
+    Char_UUID_Index uuid_ind;
+    UUID_TYPE uuid_type;
+    uint32_t properties;
 };
 
+/*
+*   Service settings
+*/
 struct service_settings {
     const char *name;
-    const char* uuid;
-    enum UUID_TYPE uuid_type;
-    const int characteristic_count;
-    const struct characteristic_settings characteristics[];
+    const char *uuid;
+    UUID_TYPE uuid_type;
+    int characteristic_count;
+    const characteristic_settings *characteristics;   // pointer to array
 };
 
+/*
+*   Bluetooth settings
+*/
 struct bluetooth_settings {
     const char *device_name;
-    const int service_count;
-    const struct service_settings services[];
+    int service_count;
+    const service_settings *services;                 // pointer to array
 };
 
-static constexpr struct service_settings s_s_1 {
-    .name = "Function generator settings",
-    .uuid = service_uuid_map[Service_UUID_Index::FUNCTIONGEN],
-    .uuid_type = CUSTOM,
-    .characteristic_count = 4,
-    .characteristics = {
-        {
-            .name = "Waveform Type",
-            .uuid = char_uuid_map[WAVEFORM],
-            .uuid_ind = WAVEFORM,
-            .uuid_type = CUSTOM,
-            .properties = BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
-        },
-        {
-            .name = "Frequency [Hz]",
-            .uuid = char_uuid_map[FREQUENCY],
-            .uuid_ind = FREQUENCY,
-            .uuid_type = CUSTOM,
-            .properties = BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
-        },
-        {
-            .name = "Pulse Width [%]",
-            .uuid = char_uuid_map[PULSEWIDTH],
-            .uuid_ind = PULSEWIDTH,
-            .uuid_type = CUSTOM,
-            .properties = BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
-        },
-        {
-            .name = "Amplitude [mA]",
-            .uuid = char_uuid_map[AMPLITUDE],
-            .uuid_ind = AMPLITUDE,
-            .uuid_type = CUSTOM,
-            .properties = BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
-        }
+/*
+*   ---- Static configuration data ----
+*/
+
+/* Characteristics for service 1 */
+static const characteristic_settings s_s_1_characteristics[] = {
+    {
+        "Waveform Type",
+        char_uuid_map[WAVEFORM],
+        WAVEFORM,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    },
+    {
+        "Frequency [Hz]",
+        char_uuid_map[FREQUENCY],
+        FREQUENCY,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    },
+    {
+        "Pulse Width [%]",
+        char_uuid_map[PULSEWIDTH],
+        PULSEWIDTH,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    },
+    {
+        "Amplitude [mA]",
+        char_uuid_map[AMPLITUDE],
+        AMPLITUDE,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    },
+    {
+        "State [int]",
+        char_uuid_map[FG_STATE],
+        FG_STATE,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    }
+        
+};
+
+/* Service definitions */
+static const service_settings services[] = {
+    {
+        "Function generator settings",
+        service_uuid_map[FUNCTIONGEN],
+        CUSTOM,
+        5,
+        s_s_1_characteristics
+    },
+    {
+        "Recipes",
+        service_uuid_map[RECIPE],
+        CUSTOM,
+        0,
+        nullptr
     }
 };
 
-
-static constexpr struct bluetooth_settings b_s {
-    .device_name = "EMS Control Device",
-    .service_count = 1,
-    .services = {
-        s_s_1
-    }
+/* Top-level Bluetooth settings */
+static const bluetooth_settings b_s = {
+    "EMS Control Device",
+    2,
+    services
 };
 
-static const char* bl_settings_getUUID(const struct service_settings *ss) {
-    switch (ss->uuid_type) {
-        case SIG:
-            return ss->uuid;
-        case CUSTOM:
-            return ss->uuid;
-        default:
-            return ss->uuid;
-    }
+/*
+*   UUID helper functions
+*/
+static inline const char* bl_settings_getUUID(const service_settings *ss) {
+    return ss->uuid;
 }
 
-static const char* bl_settings_getUUID(const struct characteristic_settings *cs) {
-    switch (cs->uuid_type) {
-        case SIG:
-            return cs->uuid;
-        case CUSTOM:
-            return cs->uuid;
-        default:
-            return cs->uuid;
-    }
+static inline const char* bl_settings_getUUID(const characteristic_settings *cs) {
+    return cs->uuid;
 }
-

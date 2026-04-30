@@ -5,7 +5,6 @@
 #include <BLEDescriptor.h>
 
 #include "hal/bluetooth_uuid.h"
-#include "app/valchange_request.h"
 
 class OurServerCallbacks : public BLEServerCallbacks {
     public:

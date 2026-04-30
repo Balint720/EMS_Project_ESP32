@@ -1,8 +1,6 @@
 #pragma once
 
-#include <BLEDevice.h>
-#include <BLEServer.h>
-#include <BLEUtils.h>
+#include <string>
 
 #include "hal/bluetooth_uuid.h"
 

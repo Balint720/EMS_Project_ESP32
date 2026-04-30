@@ -1,11 +1,13 @@
 #include "hal/web.h"
 
+#if INCLUDE_WIFI
+
 #include <WiFi.h>
 #include <Arduino.h>
 
 #include "app/http_reqs.h"
 
-static WiFiServer server;
+static WiFiServer *server;
 
 static void scanNetworks();
 
@@ -44,13 +46,13 @@ void HAL_SetupWiFi() {
 
 void HAL_SetupWebServer() {
     // Setting up server
-    server = WiFiServer(80);
-    server.begin();
+    server = new WiFiServer(80);
+    server->begin();
     Serial.println("Server started");
 }
 
 void HAL_WebServerLoop() {
-    wifiServerLoop(&server);
+    wifiServerLoop(server);
 }
 
 static void scanNetworks() {
@@ -68,3 +70,5 @@ static void scanNetworks() {
     Serial.println(WiFi.SSID(thisNet));
   }
 }
+
+#endif  // INCLUDE_WIFI

@@ -22,6 +22,13 @@ bool APP_FuncGenChangeRequest(enum Char_UUID_Index fvt, T val) {
             return setFreq(val) == NO_ERROR;
         case AMPLITUDE:
             return setAmp(val) == NO_ERROR;
+        case FG_STATE:
+            if (val) {
+                return turnOn();
+            }
+            else {
+                return turnOff();
+            }
         default:
             return false;
     }
@@ -38,6 +45,8 @@ T APP_FuncGenGetRequest(enum Char_UUID_Index fvt) {
             return (T)getFreq();
         case AMPLITUDE:
             return (T)getAmp();
+        case FG_STATE:
+            return (T)isOn();
         default:
             return 0;
     }

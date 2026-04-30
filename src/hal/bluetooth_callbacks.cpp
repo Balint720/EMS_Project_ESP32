@@ -5,6 +5,8 @@
 
 #include "hal/bluetooth_uuid.h"
 
+#include "app/valchange_request.h"
+
 #include "sys/convert.h"
 
 /*
@@ -36,8 +38,8 @@ void OurCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic, esp
             case WAVEFORM:
             case PULSEWIDTH:
             case FREQUENCY:
-                Serial.println("Pulsewidth or Frequency");
-                //btVal = std::string((char*)param->write.value, (size_t)param->write.len);
+            case FG_STATE:
+                Serial.println("Pulsewidth or Frequency or State change");
                 res_i = packetToInt((char*)param->write.value, (size_t)param->write.len);
 
                 if (APP_FuncGenChangeRequest(assocFuncGen, res_i)) {
@@ -58,13 +60,13 @@ void OurCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic, esp
                 if (APP_FuncGenChangeRequest(assocFuncGen, res_d)) {
                     pCharacteristic->setValue(param->write.value, param->write.len);
                 }
-                pCharacteristic->setValue(
+                else {pCharacteristic->setValue(
                         doubleToPacket(
                             APP_FuncGenGetRequest<double>(assocFuncGen)
                         )
                     );
+                }
                 break;
-                
         }
     }
     

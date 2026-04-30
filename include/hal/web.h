@@ -13,6 +13,11 @@
 
 #define MAX_ATTEMPT_COUNT 10
 
+#if INCLUDE_WIFI
 void HAL_SetupWiFi();
-
 void HAL_SetupWebServer();
+#else
+// Stub functions when WiFi is not included
+inline void HAL_SetupWiFi() {}
+inline void HAL_SetupWebServer() {}
+#endif

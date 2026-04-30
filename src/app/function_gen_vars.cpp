@@ -5,12 +5,11 @@
 #include "sys/convert.h"
 
 #include <Arduino.h>
+
+#include "hal/bluetooth_uuid.h"
 /*
 *   Formatting values that we get from bluetooth
 */
-
-#define UPDATE_TIME_MS 1000
-
 
 static int getIntFromBTDataString(Service_UUID_Index sInd, Char_UUID_Index cInd) {
     try {
@@ -77,7 +76,7 @@ void APP_SetupFuncGen() {
 
 void APP_LoopFuncGen() {
     unsigned long t = millis();
-    if (lastCheck + 3000 < t) {
+    if (lastCheck + 10000 < t) {
         lastCheck = t;
         //UpdateVars();
 
@@ -93,64 +92,82 @@ void APP_LoopFuncGen() {
 /*
 *   Func generator variables that are inaccessible outside of this file
 */
-static struct funcGenVars_t funcGenVars;
-static struct funcGenVars_t funcGenVars_MIN = {
-    .pulseWidth = 100,
-    .freq = 10,
-    .amp = 0.0
-};
-static struct funcGenVars_t funcGenVars_MAX = {
-    .pulseWidth = 400,
-    .freq = 60,
-    .amp = 100.0
-};
+static struct funcGenVars_t *funcGenVars;
+static struct funcGenVars_t *funcGenVars_MIN;
+static struct funcGenVars_t *funcGenVars_MAX;
+static bool funcGenOn = false;
+
+void APP_SetupGlobalFuncGenVars() {
+    funcGenVars = new funcGenVars_t();
+    funcGenVars_MIN = new funcGenVars_t {
+        .waveform = SQUARE,
+        .pulseWidth = 100,
+        .freq = 1,
+        .amp = 0.0
+    };
+    funcGenVars_MAX = new funcGenVars_t {
+        .waveform = SQUARE,
+        .pulseWidth = 400,
+        .freq = 60,
+        .amp = 100.0
+    };
+
+    funcGenOn = false;
+}
 
 /*
 *   Getters and setters
 */
 enum Waveform getWaveform() {
-    return funcGenVars.waveform;
+    return funcGenVars->waveform;
 }
 
 unsigned int getPulseWidth() {
-    return funcGenVars.pulseWidth;
+    return funcGenVars->pulseWidth;
 }
 
 unsigned int getFreq() {
-    return funcGenVars.freq;
+    return funcGenVars->freq;
 }
 
 double getAmp() {
-    return funcGenVars.amp;
+    return funcGenVars->amp;
+}
+
+bool isOn() {
+    return funcGenOn;
 }
 
 enum Errors setWaveform(enum Waveform w) {
-    funcGenVars.waveform = w;
+    funcGenVars->waveform = w;
+    HAL_ReactToValueChange(WAVEFORM);
     return NO_ERROR;
 }
 
 enum Errors setPulseWidth(unsigned int pulseWidth) {
-    if (pulseWidth < funcGenVars_MIN.pulseWidth) {
+    if (pulseWidth < funcGenVars_MIN->pulseWidth) {
         return UNDER_MINIMUM;
     }
-    else if (pulseWidth > funcGenVars_MAX.pulseWidth) {
+    else if (pulseWidth > funcGenVars_MAX->pulseWidth) {
         return OVER_MAXIMUM;
     }
     else {
-        funcGenVars.pulseWidth = pulseWidth;
+        funcGenVars->pulseWidth = pulseWidth;
+        HAL_ReactToValueChange(PULSEWIDTH);
         return NO_ERROR;
     }
 }
 enum Errors setFreq(unsigned int freq) {
     Serial.printf("Received value: %d", freq);
-    if (freq < funcGenVars_MIN.freq) {
+    if (freq < funcGenVars_MIN->freq) {
         return UNDER_MINIMUM;
     }
-    else if (freq > funcGenVars_MAX.freq) {
+    else if (freq > funcGenVars_MAX->freq) {
         return OVER_MAXIMUM;
     }
     else {
-        funcGenVars.freq = freq;
+        funcGenVars->freq = freq;
+        HAL_ReactToValueChange(FREQUENCY);
         return NO_ERROR;
     }
 }
@@ -158,14 +175,27 @@ enum Errors setAmp(double amp) {
     if (isnan(amp)) {
         return INVALID_INPUT;
     }
-    else if (amp < funcGenVars_MIN.amp) {
+    else if (amp < funcGenVars_MIN->amp) {
         return UNDER_MINIMUM;
     }
-    else if (amp > funcGenVars_MAX.amp) {
+    else if (amp > funcGenVars_MAX->amp) {
         return OVER_MAXIMUM;
     }
     else {
-        funcGenVars.amp = amp;
+        funcGenVars->amp = amp;
+        HAL_ReactToValueChange(AMPLITUDE);
         return NO_ERROR;
     }
+}
+
+enum Errors turnOn() {
+    funcGenOn = true;
+    HAL_ReactToValueChange(FG_STATE);
+    return NO_ERROR;
+}
+
+enum Errors turnOff() {
+    funcGenOn = false;
+    HAL_ReactToValueChange(FG_STATE);
+    return NO_ERROR;
 }

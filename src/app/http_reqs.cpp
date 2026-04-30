@@ -1,4 +1,8 @@
 #include "app/http_reqs.h"
+
+#if INCLUDE_WIFI
+
+#include <WiFi.h>
 #include <string.h>
 
 // Globals
@@ -118,3 +122,5 @@ void processRequestLine(char* line, enum HTTP_Request_Part* part) {
             break;
     }
 }
+
+#endif  // INCLUDE_WIFI
