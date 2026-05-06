@@ -86,7 +86,7 @@ inline static std::string intToPacket(int data, size_t size = sizeof(int)) {
 }
 
 inline static std::string doubleToPacket(double data) {
-#if defined(INT_DATAPACKET_BIG_ENDIAN)
+#if defined(FLOAT_DATAPACKET_BIG_ENDIAN)
     std::string res;
     byte *bData = new byte(sizeof(double));
     memcpy(bData, &data, sizeof(double));
@@ -95,7 +95,7 @@ inline static std::string doubleToPacket(double data) {
         res[i] = bData[i];
     }
     return res;
-#elif defined(INT_DATAPACKET_LITTLE_ENDIAN)
+#elif defined(FLOAT_DATAPACKET_LITTLE_ENDIAN)
     std::string res;
     byte *bData = new byte(sizeof(double));
     memcpy(bData, &data, sizeof(double));
@@ -105,7 +105,7 @@ inline static std::string doubleToPacket(double data) {
     }
     return res;
 #else
-    #error NO ENDIANNESS OF INTEGER DATA DEFINED
+    #error NO ENDIANNESS OF FLOAT DATA DEFINED
 #endif
 }
 

@@ -13,8 +13,8 @@ void APP_SetupGlobalRecipe() {
     currRecipe = new funcGenRecipe_st();
 }
 
-funcGenRecipe_st getCurrentRecipe() {
-    return *currRecipe;
+funcGenRecipe_st* getCurrentRecipe() {
+    return currRecipe;
 }
 
 int setCurrentRecipe(const funcGenRecipe_st *newRecipe) {

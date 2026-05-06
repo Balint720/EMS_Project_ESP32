@@ -33,7 +33,7 @@ enum Errors {
 struct funcGenVars_t {
     enum Waveform waveform;
     unsigned int pulseWidth;
-    unsigned int freq;
+    double freq;
     double amp;
 };
 
@@ -42,14 +42,14 @@ struct funcGenVars_t {
 */
 enum Waveform getWaveform();
 unsigned int getPulseWidth();
-unsigned int getFreq();
+double getFreq();
 double getAmp();
 bool isOn();
 
-enum Errors setWaveform(enum Waveform);
-enum Errors setPulseWidth(unsigned int);
-enum Errors setFreq(unsigned int);
-enum Errors setAmp(double);
+enum Errors setWaveform(enum Waveform, funcGenVars_t *st = nullptr);
+enum Errors setPulseWidth(unsigned int, funcGenVars_t *st = nullptr);
+enum Errors setFreq(double, funcGenVars_t *st = nullptr);
+enum Errors setAmp(double, funcGenVars_t *st = nullptr);
 
 enum Errors turnOn();
 enum Errors turnOff();

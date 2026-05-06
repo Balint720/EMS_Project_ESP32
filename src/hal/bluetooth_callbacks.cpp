@@ -37,9 +37,8 @@ void OurCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic, esp
         switch (assocFuncGen) {
             case WAVEFORM:
             case PULSEWIDTH:
-            case FREQUENCY:
             case FG_STATE:
-                Serial.println("Pulsewidth or Frequency or State change");
+                Serial.println("Pulsewidth or State change");
                 res_i = packetToInt((char*)param->write.value, (size_t)param->write.len);
 
                 if (APP_FuncGenChangeRequest(assocFuncGen, res_i)) {
@@ -54,7 +53,8 @@ void OurCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic, esp
                 }
                 break;
             case AMPLITUDE:
-                Serial.println("Amplitude");
+            case FREQUENCY:
+                Serial.println("Amplitude or frequency");
                 double res_d = packetToDouble((char*)param->write.value, (size_t)param->write.len);
                 
                 if (APP_FuncGenChangeRequest(assocFuncGen, res_d)) {

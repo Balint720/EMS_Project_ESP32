@@ -6,15 +6,22 @@
 #include "hal/funcgen_chip.h"
 #include "hal/spi.h"
 #include "hal/pot.h"
+#include "hal/adc.h"
 
 #include "sys/sys.h"
+#include "sys/convert.h"
 
 
 void HAL_Setup() {
+
+    debug_print("Setting up ADC...\n");
+    HAL_SetupADC();
+    debug_print("ADC setup completed!\n");
     #if INCLUDE_WIFI
     HAL_SetupWiFi();
     HAL_SetupWebServer();
     #endif
+    debug_print("Setting up bluetooth...\n");
     HAL_SetupBluetooth();
     debug_print("Bluetooth setup completed!\n");
     debug_print("Setting up SPI...\n");
@@ -31,12 +38,7 @@ void HAL_Setup() {
 static unsigned long timer = millis();
 
 void HAL_Loop() {
-    unsigned long curr = millis();
-    if (curr - timer >= 10000) {
-        timer = curr;
-        debug_print("Func gen chip variables:\n");
-        debug_print("Frequency: %f Hz\nState: %d\n", getFreqAD9833(), getStateAD9833());
-    }
+    HAL_LoopADC();
 }
 
 void HAL_ReactToValueChange(Char_UUID_Index cI) {
@@ -62,17 +64,27 @@ void HAL_ReactToValueChange(Char_UUID_Index cI) {
     }
 }
 
-std::string HAL_BT_GetValue(Service_UUID_Index sI, Char_UUID_Index cI) {
-    
-    return getCharacteristicValue(sI, cI);
+int HAL_BT_GetValueInt(Service_UUID_Index sI, Char_UUID_Index cI) {
+    return packetToInt(getCharacteristicValue(sI, cI));
 }
 
-void HAL_BT_SetValue(Service_UUID_Index sI, Char_UUID_Index cI, const char *val) {
-    setCharacteristicValue(sI, cI, val);
+float HAL_BT_GetValueFloat(Service_UUID_Index sI, Char_UUID_Index cI) {
+    return packetToDouble(getCharacteristicValue(sI, cI));
 }
 
-void HAL_BT_SetValue(Service_UUID_Index sI, Char_UUID_Index cI, std::string val) {
-    setCharacteristicValue(sI, cI, val.c_str());
+double HAL_BT_GetValueDouble(Service_UUID_Index sI, Char_UUID_Index cI) {
+    return packetToDouble(getCharacteristicValue(sI, cI));
+}
+
+void HAL_BT_SetValueInt(Service_UUID_Index sI, Char_UUID_Index cI, int value) {
+    setCharacteristicValue(sI, cI, intToPacket(value));
+}
+
+void HAL_BT_SetValueFloat(Service_UUID_Index sI, Char_UUID_Index cI, float value) {
+    setCharacteristicValue(sI, cI, doubleToPacket(value));
+}
+void HAL_BT_SetValueDouble(Service_UUID_Index sI, Char_UUID_Index cI, double value) {
+    setCharacteristicValue(sI, cI, doubleToPacket(value));
 }
 
 int HAL_SaveRecipeToFlash(const funcGenRecipe_st *recipe, int index) {
@@ -82,9 +94,11 @@ int HAL_SaveRecipeToFlash(const funcGenRecipe_st *recipe, int index) {
 
 int HAL_LoadRecipeFromFlash(int index, funcGenRecipe_st* out) {
     readRecipe(index, out);
-    debug_print("First two recipe steps read:\n");
-    debug_print("Number one:\nFrequency: %d\nAmplitude: %f\nPulse width: %d\nWaveform: %d\n", out->recipe[0].freq, out->recipe[0].amp, out->recipe[0].pulseWidth, out->recipe[0].waveform);
-    debug_print("Number two:\nFrequency: %d\nAmplitude: %f\nPulse width: %d\nWaveform: %d\n", out->recipe[1].freq, out->recipe[1].amp, out->recipe[1].pulseWidth, out->recipe[1].waveform);
 
     return 0;
+}
+
+
+uint32_t HAL_GetFuncGenOutput() {
+    return getFgenADCInput();
 }

@@ -91,6 +91,44 @@ static const characteristic_settings s_s_1_characteristics[] = {
         
 };
 
+static const characteristic_settings s_s_2_characteristics[] = {
+    {
+        "Waveform Type",
+        char_uuid_map[RECIPE_WAVEFORM],
+        RECIPE_WAVEFORM,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    },
+    {
+        "Frequency [Hz]",
+        char_uuid_map[RECIPE_FREQUENCY],
+        FREQUENCY,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    },
+    {
+        "Pulse Width [%]",
+        char_uuid_map[RECIPE_PULSEWIDTH],
+        RECIPE_PULSEWIDTH,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    },
+    {
+        "Amplitude [mA]",
+        char_uuid_map[RECIPE_AMPLITUDE],
+        RECIPE_AMPLITUDE,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    },
+    {
+        "Count",
+        char_uuid_map[RECIPE_STEPCOUNT],
+        RECIPE_STEPCOUNT,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    }
+};
+
 /* Service definitions */
 static const service_settings services[] = {
     {
@@ -104,6 +142,13 @@ static const service_settings services[] = {
         "Recipes",
         service_uuid_map[RECIPE],
         CUSTOM,
+        5,
+        s_s_2_characteristics
+    },
+    {
+        "Output values",
+        service_uuid_map[OUTPUTVALS],
+        CUSTOM,
         0,
         nullptr
     }
@@ -112,7 +157,7 @@ static const service_settings services[] = {
 /* Top-level Bluetooth settings */
 static const bluetooth_settings b_s = {
     "EMS Control Device",
-    2,
+    3,
     services
 };
 

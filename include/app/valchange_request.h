@@ -7,28 +7,71 @@
 */
 #include "app/function_gen_vars.h"
 #include "hal/bluetooth_uuid.h"
+#include "hal/hal.h"
+#include "sys/sys.h"
 
 #include <Arduino.h>
 
 template <typename T>
-bool APP_FuncGenChangeRequest(enum Char_UUID_Index fvt, T val) {
+bool APP_FuncGenChangeRequest(enum Char_UUID_Index fvt, T val, funcGenVars_t *st = nullptr) {
+    if (fvt >= Char_UUID_Index::RECIPE_WAVEFORM && fvt <= Char_UUID_Index::RECIPE_LENGTH && st == nullptr)
+    {
+        debug_print("No recipe step given!\n");
+        return false;
+    }
+        
     switch (fvt) {
-        case WAVEFORM:
-            return setWaveform((Waveform)val) == NO_ERROR;
-        case PULSEWIDTH:
-            return setPulseWidth(val) == NO_ERROR;
-        case FREQUENCY:
-            Serial.println("Setting frequency");
-            return setFreq(val) == NO_ERROR;
-        case AMPLITUDE:
-            return setAmp(val) == NO_ERROR;
-        case FG_STATE:
+        case Char_UUID_Index::WAVEFORM:
+            if (setWaveform((Waveform)val) == NO_ERROR) {
+                HAL_ReactToValueChange(Char_UUID_Index::WAVEFORM);
+                return true;
+            }
+            else return false;
+        case Char_UUID_Index::PULSEWIDTH:
+            if (setPulseWidth(val) == NO_ERROR) {
+                HAL_ReactToValueChange(Char_UUID_Index::WAVEFORM);
+                return true;
+            }
+            else return false;
+        case Char_UUID_Index::FREQUENCY:
+            if (setFreq(val) == NO_ERROR) {
+                HAL_ReactToValueChange(Char_UUID_Index::FREQUENCY);
+                return true;
+            }
+            else return false;
+        case Char_UUID_Index::AMPLITUDE:
+            if (setAmp(val) == NO_ERROR) {
+                HAL_ReactToValueChange(Char_UUID_Index::AMPLITUDE);
+                return true;
+            }
+            else return false;
+        case Char_UUID_Index::FG_STATE:
             if (val) {
                 return turnOn();
             }
             else {
                 return turnOff();
             }
+        case Char_UUID_Index::RECIPE_WAVEFORM:
+            if (setWaveform((Waveform)val, st) == NO_ERROR) {
+                return true;
+            }
+            else return false;
+        case Char_UUID_Index::RECIPE_PULSEWIDTH:
+            if (setPulseWidth(val, st) == NO_ERROR) {
+                return true;
+            }
+            else return false;
+        case Char_UUID_Index::RECIPE_FREQUENCY:
+            if (setFreq(val, st) == NO_ERROR) {
+                return true;
+            }
+            else return false;
+        case Char_UUID_Index::RECIPE_AMPLITUDE:
+            if (setAmp(val, st) == NO_ERROR) {
+                return true;
+            }
+            else return false;
         default:
             return false;
     }

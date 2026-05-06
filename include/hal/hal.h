@@ -16,10 +16,13 @@ void HAL_ReactToValueChange(Char_UUID_Index);
 /*
 *   Bluetooth HAL functions
 */
-std::string HAL_BT_GetValue(Service_UUID_Index, Char_UUID_Index);
+int     HAL_BT_GetValueInt(Service_UUID_Index, Char_UUID_Index);
+float   HAL_BT_GetValueFloat(Service_UUID_Index, Char_UUID_Index);
+double  HAL_BT_GetValueDouble(Service_UUID_Index, Char_UUID_Index);
 
-void HAL_BT_SetValue(Service_UUID_Index, Char_UUID_Index, const char*);
-void HAL_BT_SetValue(Service_UUID_Index, Char_UUID_Index, std::string);
+void HAL_BT_SetValueInt(Service_UUID_Index, Char_UUID_Index, int);
+void HAL_BT_SetValueFloat(Service_UUID_Index, Char_UUID_Index, float);
+void HAL_BT_SetValueDouble(Service_UUID_Index, Char_UUID_Index, double);
 
 /*
 *   SPI HAL functions
@@ -27,3 +30,7 @@ void HAL_BT_SetValue(Service_UUID_Index, Char_UUID_Index, std::string);
 
 int HAL_SaveRecipeToFlash(const funcGenRecipe_st *recipe, int index = -1);
 int HAL_LoadRecipeFromFlash(int, funcGenRecipe_st* out);
+
+
+
+uint32_t HAL_GetFuncGenOutput();
