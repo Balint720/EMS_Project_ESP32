@@ -24,7 +24,7 @@ void clientDisconnectCallback();
 */
 void HAL_SetupBluetooth() {
     debug_print("Setting up Bluetooth Low Energy\n");
-
+    
     BLEDevice::init(b_s.device_name);
     
     pServer = BLEDevice::createServer();

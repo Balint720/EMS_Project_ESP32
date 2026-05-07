@@ -5,7 +5,7 @@
 
 struct funcGenRecipe_st {
     unsigned int stepCount;
-    funcGenVars_t recipe[MAX_RECIPE_STEP_COUNT];
+    funcGenVars_st recipe[MAX_RECIPE_STEP_COUNT];
 };
 
 enum RecipeVars {
@@ -16,34 +16,37 @@ enum RecipeVars {
 };
 
 void APP_SetupGlobalRecipe();
+void APP_LoopFuncGenRecipe();
 
-struct funcGenVars_t* getCurrentRecipeSteps(unsigned int *);
+struct funcGenVars_st* getCurrentRecipeStep();
+struct funcGenVars_st* getCurrentRecipeStepIndexed(unsigned int);
 struct funcGenRecipe_st* getCurrentRecipe();
-int setCurrentRecipe(struct funcGenRecipe_st);
+int setCurrentRecipe(struct funcGenRecipe_st*);
 int saveCurrentRecipe();
 int loadCurrentRecipe(int);
 
+int getRecipeSelectionNumber();
+int getRecipeStepNumber();
+bool setRecipeSelectionNumber(unsigned int);
+bool setRecipeStepNumber(unsigned int);
+
+bool actionOnRecipe(uint8_t command, uint8_t value);
+
 template <typename T>
 int updateCurrentRecipe(unsigned int step, RecipeVars valType, T value) {
-    funcGenRecipe_st* cr = getCurrentRecipe();
-    if (step > cr->stepCount - 1) {
-        if (step == cr->stepCount) cr->stepCount++;
-        else {
-            debug_print("Error: step number out of bounds\n");
-            return -1;
-        }
-    }
+    funcGenVars_st* currStep = getCurrentRecipeStep();
+    if (currStep == nullptr) return -1;
 
     switch (valType) {
         case RV_WAVEFORM:
-            cr->recipe[step].waveform = value;
+            currStep->waveform = value;
             break;
         case RV_FREQUENCY:
-            cr->recipe[step].freq = value;
+            currStep->freq = value;
         case RV_AMPLTIUDE:
-            cr->recipe[step].amp = value;
+            currStep->amp = value;
         case RV_PULSEWIDTH:
-            cr->recipe[step].pulseWidth = value;
+            currStep->pulseWidth = value;
         default:
             debug_print("Error: invalid variable type\n");
             return -1;

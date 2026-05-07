@@ -15,11 +15,9 @@ class OurServerCallbacks : public BLEServerCallbacks {
 class OurCharacteristicCallbacks : public BLECharacteristicCallbacks {
     public:
         void onWrite(BLECharacteristic *pCharacteristic, esp_ble_gatts_cb_param_t* param) override;
-        OurCharacteristicCallbacks();
-        OurCharacteristicCallbacks(Char_UUID_Index assocFuncGen);
+        OurCharacteristicCallbacks(Char_UUID_Index assocChar);
     private:
-        bool isFuncGenVariableChar;
-        Char_UUID_Index assocFuncGen;
+        Char_UUID_Index assocChar;
 };
 
 class OurDescriptorCallbacks : public BLEDescriptorCallbacks {

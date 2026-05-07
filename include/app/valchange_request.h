@@ -13,7 +13,7 @@
 #include <Arduino.h>
 
 template <typename T>
-bool APP_FuncGenChangeRequest(enum Char_UUID_Index fvt, T val, funcGenVars_t *st = nullptr) {
+bool APP_FuncGenChangeRequest(enum Char_UUID_Index fvt, T val, funcGenVars_st *st = nullptr, int index = 0) {
     if (fvt >= Char_UUID_Index::RECIPE_WAVEFORM && fvt <= Char_UUID_Index::RECIPE_LENGTH && st == nullptr)
     {
         debug_print("No recipe step given!\n");
@@ -52,6 +52,9 @@ bool APP_FuncGenChangeRequest(enum Char_UUID_Index fvt, T val, funcGenVars_t *st
             else {
                 return turnOff();
             }
+        case Char_UUID_Index::RECIPE_INFO:
+            if (index == 0)         return setRecipeSelectionNumber(val);
+            else                    return setRecipeStepNumber(val);
         case Char_UUID_Index::RECIPE_WAVEFORM:
             if (setWaveform((Waveform)val, st) == NO_ERROR) {
                 return true;
@@ -78,7 +81,7 @@ bool APP_FuncGenChangeRequest(enum Char_UUID_Index fvt, T val, funcGenVars_t *st
 }
 
 template <typename T>
-T APP_FuncGenGetRequest(enum Char_UUID_Index fvt) {
+T APP_FuncGenGetRequest(enum Char_UUID_Index fvt, int index = 0) {
     switch (fvt) {
         case WAVEFORM:
             return (T)getWaveform();
@@ -90,6 +93,17 @@ T APP_FuncGenGetRequest(enum Char_UUID_Index fvt) {
             return (T)getAmp();
         case FG_STATE:
             return (T)isOn();
+        case RECIPE_INFO:
+            if (index == 0)     return (T)getRecipeSelectionNumber();
+            else                return (T)getRecipeStepNumber();
+        case RECIPE_WAVEFORM:
+            return (T)getCurrentRecipeStep()->waveform;
+        case RECIPE_PULSEWIDTH:
+            return (T)getCurrentRecipeStep()->pulseWidth;
+        case RECIPE_FREQUENCY:
+            return (T)getCurrentRecipeStep()->freq;
+        case RECIPE_AMPLITUDE:
+            return (T)getCurrentRecipeStep()->amp;
         default:
             return 0;
     }

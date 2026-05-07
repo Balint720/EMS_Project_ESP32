@@ -3,7 +3,7 @@
 enum Service_UUID_Index {
     FUNCTIONGEN,
     RECIPE,
-    OUTPUTVALS
+    SETTINGS
 };
 
 enum Char_UUID_Index {
@@ -12,7 +12,8 @@ enum Char_UUID_Index {
     PULSEWIDTH,
     AMPLITUDE,
     FG_STATE,
-    RECIPE_STEPCOUNT,
+    RECIPE_INFO,
+    RECIPE_ACTIONS,
     RECIPE_WAVEFORM,
     RECIPE_FREQUENCY,
     RECIPE_PULSEWIDTH,
@@ -23,22 +24,23 @@ enum Char_UUID_Index {
 
 
 static const char * const service_uuid_map[] = {
-    "aba060d5-e5dd-42b6-862c-a97312ecb95b",
-    "104dad85-0de8-4284-8522-fe5d34fd3cec",
-    "a2d089c9-c2d9-4eb4-8c67-92c7f6b50cbc"
+    "e4a12522-729a-4300-8a90-84e5e756da13",
+    "d3a60a09-c456-4f3e-8205-44d929c5e8a3",
+    "d38f43f4-5a56-494f-aff5-f0dc391288a2"
 };
 
 static const char * const char_uuid_map[] = {
-    "c1ef4cb5-5c55-40a7-82b7-5df9443f6871",
-    "ecf33cce-f166-4296-a8c0-7737dea4d5ba",
-    "7329d245-fd1f-457a-832f-b1138b977b90",
-    "b8dd73a1-29d1-4e25-b34d-e1e6eded3bbc",
-    "a119ebb7-da3b-4936-ac95-41ba18e51f8b",
-    "3b60fc24-92af-44e1-b896-a35a83e647cc",
-    "d17fac03-cbe4-41ef-8b3f-152d811f7317",
-    "4f672f51-203d-4624-8052-bd16d6ed6081",
-    "0183cc3c-c9db-4b8b-84c1-66e95b9931f6",
-    "c1440e4c-de92-4968-86e0-9c007ef9840e",
-    "39ee2507-93c0-4cb3-a831-e7a353c878ca",
-    "247ad10e-d8b9-4f8b-9f89-c81299adfee2"
+    "58f8114f-22a1-4a10-b409-a9b290e3a2ff",
+    "3c815742-b9f4-4df0-a597-bd6cd227f1f0",
+    "bd9b5e0c-b2ca-4d41-887a-c3c2eb653165",
+    "cc9eaa34-b893-483a-b705-e0af7ac69b76",
+    "e639db72-204e-4514-b177-eced50101fde",
+    "cb8ff116-ff70-49d0-8a1b-958166011d4a",
+    "0026a2cb-6903-41f9-99bf-07e184d200c7",
+    "149df178-2413-40bf-b318-8954380c0463",
+    "0e879c82-570f-4ef3-81c6-237b53703321",
+    "e24530be-8ca0-4b79-b0a6-153d509b7983",
+    "122b4fc8-16dc-47ab-bcb2-94eb1c91f6cc",
+    "f15023f5-0aaf-4f82-887c-1ea4279fe873",
+    "50571d79-8414-4911-917b-94f49710bec5"
 };

@@ -24,17 +24,28 @@ enum Errors {
     NO_ERROR,
     OVER_MAXIMUM,
     UNDER_MINIMUM,
-    INVALID_INPUT
+    INVALID_INPUT,
+    BUSY_WITH_RECIPE
 };
 
 /*
 *   This struct contains the values that will be used to configure the function generator
 */
-struct funcGenVars_t {
+struct funcGenVars_st {
     enum Waveform waveform;
     unsigned int pulseWidth;
     double freq;
     double amp;
+};
+
+/*
+*   Modes of func gen.
+*   FREE: Can freely alter recipe
+*   RECIPE_MODE: Is currently executing a recipe
+*/
+enum FuncGenMode {
+    FREE,
+    RECIPE_MODE
 };
 
 /*
@@ -46,13 +57,16 @@ double getFreq();
 double getAmp();
 bool isOn();
 
-enum Errors setWaveform(enum Waveform, funcGenVars_t *st = nullptr);
-enum Errors setPulseWidth(unsigned int, funcGenVars_t *st = nullptr);
-enum Errors setFreq(double, funcGenVars_t *st = nullptr);
-enum Errors setAmp(double, funcGenVars_t *st = nullptr);
+enum Errors setWaveform(enum Waveform, funcGenVars_st *st = nullptr);
+enum Errors setPulseWidth(unsigned int, funcGenVars_st *st = nullptr);
+enum Errors setFreq(double, funcGenVars_st *st = nullptr);
+enum Errors setAmp(double, funcGenVars_st *st = nullptr);
 
 enum Errors turnOn();
 enum Errors turnOff();
+
+enum Errors startRecipe();
+enum Errors stopRecipe();
 
 /*
 *   HAL Interface functions

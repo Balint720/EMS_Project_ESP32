@@ -51,10 +51,10 @@ void HAL_ReactToValueChange(Char_UUID_Index cI) {
             else        stopAD9833();
             break;
         case PULSEWIDTH:
-            setResistance(getPulseWidth());
+            debug_print("Pulse width change not implemented!\n");
             break;
         case AMPLITUDE:
-            //setResistance(255/getAmp());
+            setValueOfResistance(calcResistorValueToSet(getAmp()));
             break;
         case WAVEFORM:
             setWaveformAD9833(getWaveform());
@@ -96,9 +96,4 @@ int HAL_LoadRecipeFromFlash(int index, funcGenRecipe_st* out) {
     readRecipe(index, out);
 
     return 0;
-}
-
-
-uint32_t HAL_GetFuncGenOutput() {
-    return getFgenADCInput();
 }

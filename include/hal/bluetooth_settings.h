@@ -80,17 +80,11 @@ static const characteristic_settings s_s_1_characteristics[] = {
         AMPLITUDE,
         CUSTOM,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
-    },
-    {
-        "State [int]",
-        char_uuid_map[FG_STATE],
-        FG_STATE,
-        CUSTOM,
-        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
     }
         
 };
 
+/* Characteristics for service 2 */
 static const characteristic_settings s_s_2_characteristics[] = {
     {
         "Waveform Type",
@@ -102,7 +96,7 @@ static const characteristic_settings s_s_2_characteristics[] = {
     {
         "Frequency [Hz]",
         char_uuid_map[RECIPE_FREQUENCY],
-        FREQUENCY,
+        RECIPE_FREQUENCY,
         CUSTOM,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
     },
@@ -120,10 +114,27 @@ static const characteristic_settings s_s_2_characteristics[] = {
         CUSTOM,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
     },
+};
+
+static const characteristic_settings s_s_3_characteristics[] = {
     {
-        "Count",
-        char_uuid_map[RECIPE_STEPCOUNT],
-        RECIPE_STEPCOUNT,
+        "Func gen state [int]",
+        char_uuid_map[FG_STATE],
+        FG_STATE,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    },
+    {
+        "Recipe info [8;8]",
+        char_uuid_map[RECIPE_INFO],
+        RECIPE_INFO,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    },
+    {
+        "Recipe Actions [8;8]",
+        char_uuid_map[RECIPE_ACTIONS],
+        RECIPE_ACTIONS,
         CUSTOM,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
     }
@@ -132,25 +143,25 @@ static const characteristic_settings s_s_2_characteristics[] = {
 /* Service definitions */
 static const service_settings services[] = {
     {
-        "Function generator settings",
+        "Function generator values",
         service_uuid_map[FUNCTIONGEN],
         CUSTOM,
-        5,
+        4,
         s_s_1_characteristics
     },
     {
-        "Recipes",
+        "Recipe Values",
         service_uuid_map[RECIPE],
         CUSTOM,
-        5,
+        4,
         s_s_2_characteristics
     },
     {
-        "Output values",
-        service_uuid_map[OUTPUTVALS],
+        "Settings",
+        service_uuid_map[SETTINGS],
         CUSTOM,
-        0,
-        nullptr
+        3,
+        s_s_3_characteristics
     }
 };
 

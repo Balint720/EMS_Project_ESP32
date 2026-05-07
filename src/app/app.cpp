@@ -5,6 +5,7 @@
 
 void APP_SetupGlobals() {
     APP_SetupGlobalFuncGenVars();
+    APP_SetupGlobalRecipe();
 }
 
 void APP_Setup() {
@@ -14,4 +15,5 @@ void APP_Setup() {
 
 void APP_Loop() {
     APP_LoopFuncGen();
+    APP_LoopFuncGenRecipe();
 }

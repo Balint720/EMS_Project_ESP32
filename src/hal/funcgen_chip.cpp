@@ -48,6 +48,8 @@ void setWaveformAD9833(Waveform wf) {
         case SQUARE:
             fgChip->setWave(AD9833_SQUARE1);
             break;
+        case SAWTOOTH:
+            fgChip->setWave(AD9833_SQUARE2);
     }
 }
 

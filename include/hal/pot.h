@@ -4,6 +4,6 @@
 
 void initPot();
 
-void setResistance(uint16_t resistance);
+void setValueOfResistance(uint16_t resistance);
 
 void HAL_SetupPotmeter();

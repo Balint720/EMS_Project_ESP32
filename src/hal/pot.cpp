@@ -12,7 +12,7 @@ void initPot() {
     pot->begin();
 }
 
-void setResistance(uint16_t resistance) {
+void setValueOfResistance(uint16_t resistance) {
     pot->setValue(resistance);
 }
 
