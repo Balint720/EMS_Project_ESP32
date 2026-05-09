@@ -38,6 +38,7 @@ void OurCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic, esp
         case Char_UUID_Index::FG_STATE:
         case Char_UUID_Index::RECIPE_WAVEFORM:
         case Char_UUID_Index::RECIPE_PULSEWIDTH:
+        case Char_UUID_Index::RECIPE_TIME:
         {
             res_i = packetToInt((char*)param->write.value, (size_t)param->write.len);
 
@@ -75,26 +76,24 @@ void OurCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic, esp
         case Char_UUID_Index::RECIPE_INFO:
         {
             // Multiple uint8_t values stored: one is selected recipe, other is selected step
-            info[0] = packetToInt((char*)param->write.value, sizeof(uint8_t));
-            info[1] = packetToInt((char*)(param->write.value + 1), sizeof(uint8_t));
+            uint16_t info = packetToInt((char*)param->write.value, 2*sizeof(uint8_t));
 
-            debug_print("First value: %d\nSecond value: %d\n", info[0], info[1]);
+            debug_print("Info value in hex: %x\n", info);
 
-            if (APP_FuncGenChangeRequest(assocChar, info[0], nullptr, 0)) {
-                btVal = std::string((char*)param->write.value, sizeof(uint8_t));
-            }
-            else {
-                btVal = intToPacket(APP_FuncGenGetRequest<uint8_t>(assocChar, 0));
-            }
+            APP_FuncGenChangeRequest<uint16_t>(assocChar, info);
+
             
-            if (APP_FuncGenChangeRequest(assocChar, info[1], nullptr, 1)) {
-                btVal.append(std::string((char*)(param->write.value+1), sizeof(uint8_t)));
-            }
-            else {
-                btVal.append(intToPacket(APP_FuncGenGetRequest<uint8_t>(assocChar, 1)));
-            }
 
-            pCharacteristic->setValue(btVal);
+            break;
+        }
+        case Char_UUID_Index::RECIPE_ACTIONS:
+        {
+            // Multiple uint8_t values stored: one is selected recipe, other is selected step
+            uint16_t info = packetToInt((char*)param->write.value, 2*sizeof(uint8_t));
+
+            debug_print("Info value in hex: %x\n", info);
+
+            APP_FuncGenChangeRequest<uint16_t>(assocChar, info);
             break;
         }
     }

@@ -84,13 +84,15 @@ void dumpPartitions() {
 }
 
 int setupSPI_Flash() {
-    dumpPartitions();
     recip_part = esp_partition_find_first(RECIPES_PARTITION);
     vTaskDelay(1);
+    if (recip_part == NULL) debug_print("Recipe partition not found!\n");
+    else debug_print("Recipe partition found.\n");
     int ret = esp_flash_init(esp_flash_default_chip);
     vTaskDelay(1);
 
     if (ret == ESP_OK) {
+        debug_print("ESP Flash initialization successful.\n");
         storedRecipe = new bool[MAX_RECIPE_COUNT];
 
         for (int i = 0; i < MAX_RECIPE_COUNT; i++) {
@@ -101,6 +103,7 @@ int setupSPI_Flash() {
         return 0;
     }
     else {
+        debug_print("ESP Flash initilization unsuccessful!\n");
         return -1;
     }
 }
@@ -198,8 +201,14 @@ int writeRecipe(int recipeIndex, const funcGenRecipe_st *recipe) {
     // Copy user data
     buffer.stepCount = recipe->stepCount;
     for (int i = 0; i < MAX_RECIPE_STEP_COUNT; i++) {
-        if (i < recipe->stepCount) buffer.recipe[i] = recipe->recipe[i];
-        else buffer.recipe[i] = {SQUARE,0,0,0.0}; // pad unused entries
+        if (i < recipe->stepCount) {
+            buffer.recipe[i] = recipe->recipe[i];
+            buffer.time[i] = recipe->time[i];
+        }
+        else {
+            buffer.recipe[i] = {SQUARE,0,0,0.0}; // pad unused entries
+            buffer.time[i] = 0;
+        }
     }
 
     size_t offset = recipeOffset(recipeIndex);
@@ -227,7 +236,7 @@ int writeRecipe(int recipeIndex, const funcGenRecipe_st *recipe) {
     while (remainingBytes > 0) {
         size_t chunk = remainingBytes > SPI_DATA_MAX_CHUNK_SIZE ? SPI_DATA_MAX_CHUNK_SIZE : remainingBytes;
 
-        err = esp_partition_write(recip_part, offset + offsetChunk, (&buffer)+offsetChunk, chunk);
+        err = esp_partition_write(recip_part, offset + offsetChunk, ((uint8_t*)&buffer)+offsetChunk, chunk);
 
         if (err != ESP_OK) {
             printDebugError(err);
@@ -256,7 +265,7 @@ int readRecipe(int recipeIndex, funcGenRecipe_st *outRecipe) {
         while (remainingBytes > 0) {
             size_t chunk = remainingBytes > SPI_DATA_MAX_CHUNK_SIZE ? SPI_DATA_MAX_CHUNK_SIZE : remainingBytes;
 
-            esp_err_t err = esp_partition_read(recip_part, offset + offsetChunk, (outRecipe)+offsetChunk, chunk);
+            esp_err_t err = esp_partition_read(recip_part, offset + offsetChunk, ((uint8_t*)outRecipe)+offsetChunk, chunk);
 
             if (err != ESP_OK) {
                 printDebugError(err);

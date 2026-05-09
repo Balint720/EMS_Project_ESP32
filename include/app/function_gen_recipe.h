@@ -6,13 +6,15 @@
 struct funcGenRecipe_st {
     unsigned int stepCount;
     funcGenVars_st recipe[MAX_RECIPE_STEP_COUNT];
+    time_t time[MAX_RECIPE_STEP_COUNT];
 };
 
 enum RecipeVars {
     RV_WAVEFORM,
     RV_FREQUENCY,
     RV_AMPLTIUDE,
-    RV_PULSEWIDTH
+    RV_PULSEWIDTH,
+    RV_TIME
 };
 
 void APP_SetupGlobalRecipe();
@@ -21,7 +23,11 @@ void APP_LoopFuncGenRecipe();
 struct funcGenVars_st* getCurrentRecipeStep();
 struct funcGenVars_st* getCurrentRecipeStepIndexed(unsigned int);
 struct funcGenRecipe_st* getCurrentRecipe();
+time_t getCurrentStepTime();
+time_t getCurrentStepTimeIndexed(unsigned int index);
+
 int setCurrentRecipe(struct funcGenRecipe_st*);
+int setCurrentStepTime(time_t newTime);
 int saveCurrentRecipe();
 int loadCurrentRecipe(int);
 

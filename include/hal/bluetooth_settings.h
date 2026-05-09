@@ -114,6 +114,13 @@ static const characteristic_settings s_s_2_characteristics[] = {
         CUSTOM,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
     },
+    {
+        "Length of step [ms]",
+        char_uuid_map[RECIPE_TIME],
+        RECIPE_TIME,
+        CUSTOM,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE
+    }
 };
 
 static const characteristic_settings s_s_3_characteristics[] = {
@@ -153,7 +160,7 @@ static const service_settings services[] = {
         "Recipe Values",
         service_uuid_map[RECIPE],
         CUSTOM,
-        4,
+        5,
         s_s_2_characteristics
     },
     {

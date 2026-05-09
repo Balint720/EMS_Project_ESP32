@@ -27,7 +27,6 @@ static void UpdateVarsToBtVals() {
 *   Saving values to bluetooth values
 */
 static void UpdateBtValsToVars() {
-    debug_print("Amplitude\n");
     HAL_BT_SetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::AMPLITUDE, getAmp());
     HAL_BT_SetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::PULSEWIDTH, getPulseWidth());
     HAL_BT_SetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FREQUENCY, getFreq());
@@ -51,39 +50,54 @@ void APP_SetupFuncGen() {
 }
 
 void APP_LoopFuncGen() {
-#if defined(PRINT_DEBUG_SERIAL)
+
     unsigned long t = millis();
     if (lastCheck + 10000 < t) {
         lastCheck = t;
-
+        UpdateBtValsToVars();
+#if defined(PRINT_DEBUG_SERIAL)
         debug_print("\n");
         debug_print("Amplitude: %f\n", getAmp());
         debug_print("Pulse width: %d\n", getPulseWidth());
         debug_print("Frequency: %f\n", getFreq());
         debug_print("Waveform: %d\n", getWaveform());
-    }
 #endif
-    static unsigned int currentStepOfRecipe = 0;
+    }
+
+    static unsigned int currentStepOfRecipe = -1;
     static unsigned long time = 0;
+    static time_t currentStepTime = 0;
 
     switch (funcGenMode) {
         case FREE:
-            time = 0;
+            currentStepOfRecipe = -1;
             break;
         case RECIPE_MODE:
-            if (time + 10000 < millis() || time == 0) {
+            if (time + currentStepTime < millis() || currentStepOfRecipe == -1) {
                 currentStepOfRecipe++;
                 if (currentStepOfRecipe >= getCurrentRecipe()->stepCount) {
+                    debug_print("Recipe finished.\n");
+                    currentStepOfRecipe = -1;
                     turnOff();
                     funcGenMode = FREE;
                     time = 0;
                 }
                 else {
+                    debug_print("Moving to step %d.\n", currentStepOfRecipe);
+                    currentStepTime = getCurrentStepTimeIndexed(currentStepOfRecipe);
                     funcGenVars_st curr = getCurrentRecipe()->recipe[currentStepOfRecipe];
-                    APP_FuncGenChangeRequest(Char_UUID_Index::AMPLITUDE, curr.amp);
+                    debug_print("Trying to set amplitude to %f\n", curr.amp);
+                    //APP_FuncGenChangeRequest(Char_UUID_Index::AMPLITUDE, curr.amp);
+                    vTaskDelay(5);
+                    debug_print("Trying to set frequency to %f\n", curr.freq);
                     APP_FuncGenChangeRequest(Char_UUID_Index::FREQUENCY, curr.freq);
-                    APP_FuncGenChangeRequest(Char_UUID_Index::PULSEWIDTH, curr.pulseWidth);
+                    vTaskDelay(5);
+                    debug_print("Trying to set pulsewidth to %d\n", curr.pulseWidth);
+                    //APP_FuncGenChangeRequest(Char_UUID_Index::PULSEWIDTH, curr.pulseWidth);
+                    vTaskDelay(5);
+                    debug_print("Trying to set waveform to %d\n", curr.waveform);
                     APP_FuncGenChangeRequest(Char_UUID_Index::WAVEFORM, curr.waveform);
+                    vTaskDelay(5);
                     time = millis();
                 }
             }
@@ -139,13 +153,13 @@ bool isOn() {
 }
 
 enum Errors setWaveform(enum Waveform w, funcGenVars_st* st) {
-    if (funcGenMode == RECIPE_MODE) return BUSY_WITH_RECIPE;
-    funcGenVars->waveform = w;
+    funcGenVars_st *chosenSt = st;
+    if (chosenSt == nullptr) chosenSt = funcGenVars;
+    chosenSt->waveform = w;
     return NO_ERROR;
 }
 
 enum Errors setPulseWidth(unsigned int pulseWidth, funcGenVars_st* st) {
-    if (funcGenMode == RECIPE_MODE) return BUSY_WITH_RECIPE;
     funcGenVars_st *chosenSt = st;
     if (chosenSt == nullptr) chosenSt = funcGenVars;
 
@@ -161,7 +175,6 @@ enum Errors setPulseWidth(unsigned int pulseWidth, funcGenVars_st* st) {
     }
 }
 enum Errors setFreq(double freq, funcGenVars_st* st) {
-    if (funcGenMode == RECIPE_MODE) return BUSY_WITH_RECIPE;
     funcGenVars_st *chosenSt = st;
     if (chosenSt == nullptr) chosenSt = funcGenVars;
 
@@ -177,7 +190,6 @@ enum Errors setFreq(double freq, funcGenVars_st* st) {
     }
 }
 enum Errors setAmp(double amp, funcGenVars_st* st) {
-    if (funcGenMode == RECIPE_MODE) return BUSY_WITH_RECIPE;
     funcGenVars_st *chosenSt = st;
     if (chosenSt == nullptr) chosenSt = funcGenVars;
 
@@ -197,13 +209,11 @@ enum Errors setAmp(double amp, funcGenVars_st* st) {
 }
 
 enum Errors turnOn() {
-    if (funcGenMode == RECIPE_MODE) return BUSY_WITH_RECIPE;
     funcGenOn = true;
     return NO_ERROR;
 }
 
 enum Errors turnOff() {
-    if (funcGenMode == RECIPE_MODE) return BUSY_WITH_RECIPE;
     funcGenOn = false;
     return NO_ERROR;
 }

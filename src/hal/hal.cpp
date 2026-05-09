@@ -88,12 +88,9 @@ void HAL_BT_SetValueDouble(Service_UUID_Index sI, Char_UUID_Index cI, double val
 }
 
 int HAL_SaveRecipeToFlash(const funcGenRecipe_st *recipe, int index) {
-    writeRecipe(index, recipe);
-    return 0;
+    return writeRecipe(index, recipe);
 }
 
 int HAL_LoadRecipeFromFlash(int index, funcGenRecipe_st* out) {
-    readRecipe(index, out);
-
-    return 0;
+    return readRecipe(index, out);
 }

@@ -32,7 +32,7 @@ inline static double packetToDouble(std::string data) {
     if (data.length() != 4 && data.length() != 8) {
         return std::numeric_limits<double>::quiet_NaN();
     }
-#if defined(FLOAT_DATAPACKET_BIG_ENDIAN)
+#if defined(FLOAT_DATAPACKET_LITTLE_ENDIAN)
     byte *res = new byte(data.length());
     for (int i = 0; i < data.length(); i++) {
         res[i] = data[i];
@@ -46,7 +46,7 @@ inline static double packetToDouble(std::string data) {
         double d = *((double*) res);
         return d;
     }
-#elif defined(FLOAT_DATAPACKET_LITTLE_ENDIAN)
+#elif defined(FLOAT_DATAPACKET_BIG_ENDIAN)
     byte *res = new byte(data.length());
     for (int i = 0; i < data.length(); i++) {
         res[i] = data[data.length() - 1 - i];
@@ -86,7 +86,7 @@ inline static std::string intToPacket(int data, size_t size = sizeof(int)) {
 }
 
 inline static std::string doubleToPacket(double data) {
-#if defined(FLOAT_DATAPACKET_BIG_ENDIAN)
+#if defined(FLOAT_DATAPACKET_LITTLE_ENDIAN)
     std::string res;
     byte *bData = new byte(sizeof(double));
     memcpy(bData, &data, sizeof(double));
@@ -95,7 +95,7 @@ inline static std::string doubleToPacket(double data) {
         res[i] = bData[i];
     }
     return res;
-#elif defined(FLOAT_DATAPACKET_LITTLE_ENDIAN)
+#elif defined(FLOAT_DATAPACKET_BIG_ENDIAN)
     std::string res;
     byte *bData = new byte(sizeof(double));
     memcpy(bData, &data, sizeof(double));
@@ -114,4 +114,10 @@ inline static int packetToInt(const char* data, size_t len) {
 }
 inline static double packetToDouble(const char* data, size_t len) {
     return packetToDouble(std::string(data, len));
+}
+
+inline static uint16_t combine8to16(uint8_t a, uint8_t b) {
+    uint16_t val;
+    val = (a << 8) | b;
+    return val;
 }
