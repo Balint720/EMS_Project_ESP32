@@ -28,10 +28,6 @@ void OurServerCallbacks::onDisconnect(BLEServer* pServer, esp_ble_gatts_cb_param
 OurCharacteristicCallbacks::OurCharacteristicCallbacks(Char_UUID_Index assocChar) : assocChar(assocChar) {}
 void OurCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic, esp_ble_gatts_cb_param_t* param) {
     debug_print("Write request received.\n");
-    std::string btVal;
-    int res_i;
-    double res_d;
-    uint8_t info[2];
     switch (assocChar) {
         case Char_UUID_Index::WAVEFORM:
         case Char_UUID_Index::PULSEWIDTH:
@@ -40,16 +36,18 @@ void OurCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic, esp
         case Char_UUID_Index::RECIPE_PULSEWIDTH:
         case Char_UUID_Index::RECIPE_TIME:
         {
-            res_i = packetToInt((char*)param->write.value, (size_t)param->write.len);
+            int res_i = packetToInt((char*)param->write.value, (size_t)param->write.len);
 
             if (APP_FuncGenChangeRequest(assocChar, res_i)) {
                 pCharacteristic->setValue(param->write.value, param->write.len);
             }
             else {
+                const std::string value = intToPacket(
+                    APP_FuncGenGetRequest<int>(assocChar)
+                );
                 pCharacteristic->setValue(
-                    intToPacket(
-                        APP_FuncGenGetRequest<int>(assocChar)
-                    )
+                    reinterpret_cast<const uint8_t *>(value.data()),
+                    value.size()
                 );
             }
             break;
@@ -65,10 +63,12 @@ void OurCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic, esp
                 pCharacteristic->setValue(param->write.value, param->write.len);
             }
             else {
+                const std::string value = doubleToPacket(
+                    APP_FuncGenGetRequest<double>(assocChar)
+                );
                 pCharacteristic->setValue(
-                    doubleToPacket(
-                        APP_FuncGenGetRequest<double>(assocChar)
-                    )
+                    reinterpret_cast<const uint8_t *>(value.data()),
+                    value.size()
                 );
             }
             break;

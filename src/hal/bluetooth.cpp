@@ -110,10 +110,11 @@ std::string getCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI) {
         Serial.println("ERROR: Characteristic with given uuid doesn't exist.");
         return "";
     }
-    return pChar->getValue();
+    String value = pChar->getValue();
+    return std::string(value.c_str(), value.length());
 }
 
-void setCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI, std::string val) {
+void setCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI, const std::string &val) {
     if (pServer == nullptr) {
         Serial.println("ERROR: Bluetooth Server is not initialized!!!");
         return;
@@ -131,11 +132,7 @@ void setCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI, std::stri
         return;
     }
 
-    pChar->setValue(val);
-}
-
-void setCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI, const char* val) {
-    setCharacteristicValue(sI, cI, std::string(val));
+    pChar->setValue(reinterpret_cast<const uint8_t *>(val.data()), val.size());
 }
 
 void clientDisconnectCallback() {

@@ -16,8 +16,7 @@ static void setupFgenRead() {
     analogSetPinAttenuation(PIN_FGENOUTPUT_READ, ADC_0db);
 
     // LED that follows value
-    ledcSetup(channel, freq, resolution);
-    ledcAttachPin(PIN_FGENOUTPUT_LED, channel);
+    ledcAttach(PIN_FGENOUTPUT_LED, freq, resolution);
 }
 
 void HAL_SetupADC() {

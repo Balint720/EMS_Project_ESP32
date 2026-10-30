@@ -90,13 +90,13 @@ void APP_LoopFuncGen() {
                     //APP_FuncGenChangeRequest(Char_UUID_Index::AMPLITUDE, curr.amp);
                     vTaskDelay(5);
                     debug_print("Trying to set frequency to %f\n", curr.freq);
-                    APP_FuncGenChangeRequest(Char_UUID_Index::FREQUENCY, curr.freq);
+                    APP_FuncGenChangeRequest<double>(Char_UUID_Index::FREQUENCY, curr.freq);
                     vTaskDelay(5);
                     debug_print("Trying to set pulsewidth to %d\n", curr.pulseWidth);
                     //APP_FuncGenChangeRequest(Char_UUID_Index::PULSEWIDTH, curr.pulseWidth);
                     vTaskDelay(5);
                     debug_print("Trying to set waveform to %d\n", curr.waveform);
-                    APP_FuncGenChangeRequest(Char_UUID_Index::WAVEFORM, curr.waveform);
+                    APP_FuncGenChangeRequest<int>(Char_UUID_Index::WAVEFORM, curr.waveform);
                     vTaskDelay(5);
                     time = millis();
                 }

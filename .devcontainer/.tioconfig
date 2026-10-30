@@ -1,0 +1,18 @@
+[default]
+baudrate = 115200
+databits = 8
+parity = none
+stopbits = 1
+color = 10
+
+[esp32]
+baudrate = 9600
+databits = 8
+parity = none
+stopbits = 1
+
+map = INLCRNL
+
+device = /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0
+
+color = 13

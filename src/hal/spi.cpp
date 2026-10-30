@@ -86,12 +86,17 @@ void dumpPartitions() {
 int setupSPI_Flash() {
     recip_part = esp_partition_find_first(RECIPES_PARTITION);
     vTaskDelay(1);
-    if (recip_part == NULL) debug_print("Recipe partition not found!\n");
-    else debug_print("Recipe partition found.\n");
-    int ret = esp_flash_init(esp_flash_default_chip);
+    // if (recip_part == NULL) debug_print("Recipe partition not found!\n");
+    // else debug_print("Recipe partition found.\n");
+    // int ret = esp_flash_init(esp_flash_default_chip);                // Deprecated? Unnecessary?
     vTaskDelay(1);
 
-    if (ret == ESP_OK) {
+    if (recip_part == NULL) {
+        debug_print("Recipe partition not found!\n");
+        return -1;
+    }
+    else {
+        debug_print("Recipe partition found.\n");
         debug_print("ESP Flash initialization successful.\n");
         storedRecipe = new bool[MAX_RECIPE_COUNT];
 
@@ -101,10 +106,6 @@ int setupSPI_Flash() {
         }
 
         return 0;
-    }
-    else {
-        debug_print("ESP Flash initilization unsuccessful!\n");
-        return -1;
     }
 }
 
