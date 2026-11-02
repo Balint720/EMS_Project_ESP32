@@ -40,13 +40,26 @@ static unsigned long int lastCheck = millis();
 *   Func generator variables that are inaccessible outside of this file
 */
 static struct funcGenVars_st *funcGenVars;
-static struct funcGenVars_st *funcGenVars_MIN;
-static struct funcGenVars_st *funcGenVars_MAX;
+static constexpr struct funcGenVars_st funcGenVars_MIN {
+        .waveform = SINUS,
+        .pulseWidth = 0,
+        .freq = 0,
+        .amp = 0.0
+};
+
+static constexpr struct funcGenVars_st funcGenVars_MAX {
+    .waveform = SAWTOOTH,
+    .pulseWidth = 400,
+    .freq = 25000000,
+    .amp = 10000.0
+};
 static bool funcGenOn = false;
 static FuncGenMode funcGenMode = FREE;
 
 void APP_SetupFuncGen() {
+    #if INCLUDE_BT
     UpdateBtValsToVars();
+    #endif
 }
 
 void APP_LoopFuncGen() {
@@ -54,7 +67,7 @@ void APP_LoopFuncGen() {
     unsigned long t = millis();
     if (lastCheck + 10000 < t) {
         lastCheck = t;
-        UpdateBtValsToVars();
+        // UpdateBtValsToVars();
 #if defined(PRINT_DEBUG_SERIAL)
         debug_print("\n");
         debug_print("Amplitude: %f\n", getAmp());
@@ -112,18 +125,6 @@ void APP_SetupGlobalFuncGenVars() {
         .freq = 1,
         .amp = 5.0
     };
-    funcGenVars_MIN = new funcGenVars_st {
-        .waveform = SINUS,
-        .pulseWidth = 0,
-        .freq = 0,
-        .amp = 0.0
-    };
-    funcGenVars_MAX = new funcGenVars_st {
-        .waveform = SAWTOOTH,
-        .pulseWidth = 400,
-        .freq = 25000000,
-        .amp = 100.0
-    };
 
     funcGenOn = false;
     funcGenMode = FREE;
@@ -163,10 +164,10 @@ enum Errors setPulseWidth(unsigned int pulseWidth, funcGenVars_st* st) {
     funcGenVars_st *chosenSt = st;
     if (chosenSt == nullptr) chosenSt = funcGenVars;
 
-    if (pulseWidth < funcGenVars_MIN->pulseWidth) {
+    if (pulseWidth < funcGenVars_MIN.pulseWidth) {
         return UNDER_MINIMUM;
     }
-    else if (pulseWidth > funcGenVars_MAX->pulseWidth) {
+    else if (pulseWidth > funcGenVars_MAX.pulseWidth) {
         return OVER_MAXIMUM;
     }
     else {
@@ -178,10 +179,10 @@ enum Errors setFreq(double freq, funcGenVars_st* st) {
     funcGenVars_st *chosenSt = st;
     if (chosenSt == nullptr) chosenSt = funcGenVars;
 
-    if (freq < funcGenVars_MIN->freq) {
+    if (freq < funcGenVars_MIN.freq) {
         return UNDER_MINIMUM;
     }
-    else if (freq > funcGenVars_MAX->freq) {
+    else if (freq > funcGenVars_MAX.freq) {
         return OVER_MAXIMUM;
     }
     else {
@@ -196,10 +197,10 @@ enum Errors setAmp(double amp, funcGenVars_st* st) {
     if (isnan(amp)) {
         return INVALID_INPUT;
     }
-    else if (amp < funcGenVars_MIN->amp) {
+    else if (amp < funcGenVars_MIN.amp) {
         return UNDER_MINIMUM;
     }
-    else if (amp > funcGenVars_MAX->amp) {
+    else if (amp > funcGenVars_MAX.amp) {
         return OVER_MAXIMUM;
     }
     else {

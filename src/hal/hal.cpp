@@ -7,6 +7,7 @@
 #include "hal/spi.h"
 #include "hal/pot.h"
 #include "hal/adc.h"
+#include "hal/serial.h"
 
 #include "sys/sys.h"
 #include "sys/convert.h"
@@ -21,9 +22,11 @@ void HAL_Setup() {
     HAL_SetupWiFi();
     HAL_SetupWebServer();
     #endif
+    #if INCLUDE_BT
     debug_print("Setting up bluetooth...\n");
     HAL_SetupBluetooth();
     debug_print("Bluetooth setup completed!\n");
+    #endif
     debug_print("Setting up SPI...\n");
     HAL_SetupSPI();
     debug_print("SPI setup completed!\n");
@@ -39,6 +42,7 @@ static unsigned long timer = millis();
 
 void HAL_Loop() {
     HAL_LoopADC();
+    HAL_LoopSerialRead();
 }
 
 void HAL_ReactToValueChange(Char_UUID_Index cI) {
@@ -54,7 +58,8 @@ void HAL_ReactToValueChange(Char_UUID_Index cI) {
             debug_print("Pulse width change not implemented!\n");
             break;
         case AMPLITUDE:
-            setValueOfResistance(calcResistorValueToSet(getAmp()));
+            // setValueOfResistance(calcResistorValueToSet(getAmp()));
+            setValueOfResistance((getAmp()/10000)*255);
             break;
         case WAVEFORM:
             setWaveformAD9833(getWaveform());

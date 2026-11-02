@@ -36,14 +36,14 @@ void APP_SetupGlobalRecipe() {
         debug_print("Recipe found at index 0, loaded.\n");
     }
 
-    UpdateBtValsToVars();
+    // UpdateBtValsToVars();
 }
 
 void APP_LoopFuncGenRecipe() {
     unsigned long t = millis();
     if (lastCheck + 10000 < t) {
         lastCheck = t;
-        UpdateBtValsToVars();
+        // UpdateBtValsToVars();
 #if defined(PRINT_DEBUG_SERIAL)
         debug_print("\nCurrent Selected Recipe: %d\n", selectedRecipe);
         debug_print("Current Selected step: %d\n\n", selectedStep);

@@ -75,7 +75,7 @@ void dumpPartitions() {
 
     while (it != NULL) {
         const esp_partition_t *p = esp_partition_get(it);
-        Serial.printf("Name: %-16s Type: 0x%02X Sub: 0x%02X Addr: 0x%06X Size: 0x%06X\n",
+        Serial.printf("Name: %-16s Type: 0x%02X Sub: 0x%02X Addr: 0x%08X Size: 0x%08X\n",
                       p->label, p->type, p->subtype, p->address, p->size);
         it = esp_partition_next(it);
     }
