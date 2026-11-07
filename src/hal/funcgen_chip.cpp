@@ -21,11 +21,16 @@ void startAD9833() {
 }
 
 void stopAD9833() {
-    fgChip->setPowerMode(AD9833_PWR_DISABLE_DAC);
+    //fgChip->setPowerMode(AD9833_PWR_DISABLE_DAC);
+}
+
+void resetAD9833() {
+    fgChip->reset();
+    testAD9833();
 }
 
 void testAD9833() {
-    fgChip->setFrequency(2);
+    fgChip->setFrequency(1);
     fgChip->setWave(AD9833_SQUARE1);
 }
 

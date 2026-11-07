@@ -34,8 +34,6 @@ static void UpdateBtValsToVars() {
     HAL_BT_SetValueInt(Service_UUID_Index::SETTINGS, Char_UUID_Index::FG_STATE, (int)isOn());
 }
 
-static unsigned long int lastCheck = millis();
-
 /*
 *   Func generator variables that are inaccessible outside of this file
 */
@@ -63,20 +61,6 @@ void APP_SetupFuncGen() {
 }
 
 void APP_LoopFuncGen() {
-
-    unsigned long t = millis();
-    if (lastCheck + 10000 < t) {
-        lastCheck = t;
-        // UpdateBtValsToVars();
-#if defined(PRINT_DEBUG_SERIAL)
-        debug_print("\n");
-        debug_print("Amplitude: %f\n", getAmp());
-        debug_print("Pulse width: %d\n", getPulseWidth());
-        debug_print("Frequency: %f\n", getFreq());
-        debug_print("Waveform: %d\n", getWaveform());
-#endif
-    }
-
     static unsigned int currentStepOfRecipe = -1;
     static unsigned long time = 0;
     static time_t currentStepTime = 0;

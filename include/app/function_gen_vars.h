@@ -74,8 +74,3 @@ enum Errors stopRecipe();
 void APP_LoopFuncGen();
 void APP_SetupFuncGen();
 void APP_SetupGlobalFuncGenVars();
-
-/*
-*   Other useful function generator related functions
-*/
-void printFuncGenVars();

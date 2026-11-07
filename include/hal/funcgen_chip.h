@@ -17,6 +17,7 @@ static inline uint16_t calcResistorValueToSet(double mA) {
 void initAD9833();
 void startAD9833();
 void stopAD9833();
+void resetAD9833();
 void testAD9833();
 
 void setFreqAD9833(float freq);

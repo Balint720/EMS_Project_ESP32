@@ -40,26 +40,7 @@ void APP_SetupGlobalRecipe() {
 }
 
 void APP_LoopFuncGenRecipe() {
-    unsigned long t = millis();
-    if (lastCheck + 10000 < t) {
-        lastCheck = t;
-        // UpdateBtValsToVars();
-#if defined(PRINT_DEBUG_SERIAL)
-        debug_print("\nCurrent Selected Recipe: %d\n", selectedRecipe);
-        debug_print("Current Selected step: %d\n\n", selectedStep);
-        funcGenVars_st *helper = getCurrentRecipeStep();
-        if (helper == nullptr) {
-            debug_print("Recipe step doesn't exist.\n");
-        }
-        else {
-            debug_print("Amplitude: %f\n", helper->amp);
-            debug_print("Pulse width: %d\n", helper->pulseWidth);
-            debug_print("Frequency: %f\n", helper->freq);
-            debug_print("Waveform: %d\n", helper->waveform);
-            debug_print("Time: %d\n", getCurrentStepTime());
-        }
-#endif
-    }
+
 }
 
 funcGenRecipe_st* getCurrentRecipe() {
@@ -96,14 +77,14 @@ time_t getCurrentStepTimeIndexed(unsigned int index) {
     else return 0;
 }
 
-int setCurrentRecipe(const funcGenRecipe_st *newRecipe) {
-    if (newRecipe->stepCount > MAX_RECIPE_STEP_COUNT) {
+int setCurrentRecipe(const funcGenRecipe_st &newRecipe) {
+    if (newRecipe.stepCount > MAX_RECIPE_STEP_COUNT) {
         return -1;
     }
-    for (int i = 0; i < newRecipe->stepCount; i++) {
-        currRecipe->recipe[i] = newRecipe->recipe[i];
+    for (int i = 0; i < newRecipe.stepCount; i++) {
+        currRecipe->recipe[i] = newRecipe.recipe[i];
     }
-    currRecipe->stepCount = newRecipe->stepCount;
+    currRecipe->stepCount = newRecipe.stepCount;
 
     return 0;
 }

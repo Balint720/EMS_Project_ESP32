@@ -26,7 +26,7 @@ struct funcGenRecipe_st* getCurrentRecipe();
 time_t getCurrentStepTime();
 time_t getCurrentStepTimeIndexed(unsigned int index);
 
-int setCurrentRecipe(struct funcGenRecipe_st*);
+int setCurrentRecipe(const struct funcGenRecipe_st&);
 int setCurrentStepTime(time_t newTime);
 int saveCurrentRecipe();
 int loadCurrentRecipe(int);

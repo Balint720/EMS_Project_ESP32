@@ -8,6 +8,8 @@
 
 #include "app/function_gen_vars.h"
 #include "hal/hal.h"
+#include "hal/pot.h"
+#include "hal/funcgen_chip.h"
 
 namespace SerialCommands {
     namespace Commands {
@@ -15,16 +17,47 @@ namespace SerialCommands {
         static constexpr const char* kReset = "reset";
         static constexpr const char* kOn = "on";
         static constexpr const char* kOff = "off";
+        static constexpr const char* kRead = "read";
     };
     namespace ValueNames {
         static constexpr const char* kFrequency = "frequency";
         static constexpr const char* kPulsewidth = "pulsewidth";
         static constexpr const char* kAmplitude = "amplitude";
         static constexpr const char* kWaveform = "waveform";
+        static constexpr const char* kResistance = "resistance";
     };
 };
 
 static void readSerialCommands();
+
+static void printFuncGenVars() {
+    Serial.printf("\n");
+    Serial.printf("Amplitude: %f\n", getAmp());
+    Serial.printf("Pulse width: %d\n", getPulseWidth());
+    Serial.printf("Frequency: %f\n", getFreq());
+    Serial.printf("Waveform: %d\n", getWaveform());
+}
+
+static void printFuncGenRecipeVars() {
+    Serial.printf("\nCurrent Selected Recipe: %d\n", getRecipeSelectionNumber());
+    Serial.printf("Current Selected step: %d\n\n", getRecipeStepNumber());
+    const funcGenVars_st *helper = getCurrentRecipeStep();
+    if (helper == nullptr) {
+        Serial.printf("Recipe step doesn't exist.\n");
+    }
+    else {
+        Serial.printf("Amplitude: %f\n", helper->amp);
+        Serial.printf("Pulse width: %d\n", helper->pulseWidth);
+        Serial.printf("Frequency: %f\n", helper->freq);
+        Serial.printf("Waveform: %d\n", helper->waveform);
+        Serial.printf("Time: %lld\n", getCurrentStepTime());
+    }
+}
+
+static void printPotMeterRes() {
+    Serial.printf("\n");
+    Serial.printf("Resistance: %f\n", getValueOfResistance());
+}
 
 static bool parseNumber(const char* text, double* value) {
     char* end = nullptr;
@@ -77,11 +110,19 @@ static Errors setSerialValue(const char* name, const char* text, Char_UUID_Index
         return setWaveform(waveform);
     }
 
+    if (strcmp(name, SerialCommands::ValueNames::kResistance) == 0) {
+        double value;
+        if (!parseNumber(text, &value)) return INVALID_INPUT;
+        *changedValue = RESISTANCE;
+        return setValueOfResistanceScaled(value);
+    }
+
     return INVALID_INPUT;
 }
 
 static void resetFunctionGenerator() {
-    turnOff();
+    resetAD9833();
+    /*turnOff();
     setWaveform(SQUARE);
     setPulseWidth(0);
     setFreq(1);
@@ -92,6 +133,7 @@ static void resetFunctionGenerator() {
     HAL_ReactToValueChange(PULSEWIDTH);
     HAL_ReactToValueChange(FREQUENCY);
     HAL_ReactToValueChange(AMPLITUDE);
+    */
 }
 
 void HAL_LoopSerialRead() {
@@ -137,6 +179,12 @@ static void readSerialCommands() {
         return;
     }
 
+    if (strcmp(command, SerialCommands::Commands::kRead) == 0) {
+        printFuncGenVars();
+        printPotMeterRes();
+        return;
+    }
+
     if (strcmp(command, SerialCommands::Commands::kReset) == 0) {
         if (valuename != nullptr) {
             Serial.println("The reset command does not take arguments.");
@@ -144,6 +192,7 @@ static void readSerialCommands() {
         }
         resetFunctionGenerator();
         Serial.println("Function generator reset to startup defaults.");
+        printFuncGenVars();
         return;
     }
 
@@ -152,7 +201,7 @@ static void readSerialCommands() {
         return;
     }
     if (valuename == nullptr || value == nullptr || extra != nullptr) {
-        Serial.println("Usage: set <frequency|pulsewidth|amplitude|waveform> <value>");
+        Serial.println("Usage: set <frequency|pulsewidth|amplitude|waveform|resistance> <value>");
         return;
     }
 
@@ -165,4 +214,6 @@ static void readSerialCommands() {
 
     HAL_ReactToValueChange(changedValue);
     Serial.println("Value updated successfully.");
+    printFuncGenVars();
+    printPotMeterRes();
 }
