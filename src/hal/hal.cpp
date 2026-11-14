@@ -11,6 +11,8 @@
 
 #include "sys/sys.h"
 #include "sys/convert.h"
+#include "sys/funcgen_state.h"
+#include "sys/timer.h"
 
 
 void HAL_Setup() {
@@ -48,21 +50,22 @@ void HAL_Loop() {
 void HAL_ReactToValueChange(Char_UUID_Index cI) {
     switch (cI) {
         case FREQUENCY:
-            setFreqAD9833(getFreq());
+            //setFreqAD9833(getFreq());
+            SYS_SetTimerInterruptTime(HW_TIMERS::FUNCTION_FREQUENCY, frequencyToMicroseconds(getFreq()));
             break;
         case FG_STATE:
-            if (isOn()) startAD9833();
-            else        stopAD9833();
+            //if (isOn()) startAD9833();
+            //else        stopAD9833();
             break;
         case PULSEWIDTH:
             debug_print("Pulse width change not implemented!\n");
             break;
         case AMPLITUDE:
             // setValueOfResistance(calcResistorValueToSet(getAmp()));
-            setValueOfResistance((getAmp()/10000)*255);
+            //setValueOfResistance((getAmp()/10000)*255);
             break;
         case WAVEFORM:
-            setWaveformAD9833(getWaveform());
+            //setWaveformAD9833(getWaveform());
             break;
         default:
             break;

@@ -1,6 +1,6 @@
 #include <MCP4725.h>
 
-static constexpr float kMaxVoltage;
+static constexpr float kMaxVoltage = 4095;
 
 static MCP4725 *dac_chip;
 

@@ -7,3 +7,5 @@
 #else
     #define debug_print(x, ...) ;
 #endif
+
+void SYS_Setup();

@@ -5,6 +5,8 @@
 
 #include <limits>
 
+#include "sys/timer.h"
+
 typedef uint8_t byte;
 
 inline static int packetToInt(std::string data) {
@@ -120,4 +122,9 @@ inline static uint16_t combine8to16(uint8_t a, uint8_t b) {
     uint16_t val;
     val = (a << 8) | b;
     return val;
+}
+
+inline static uint64_t frequencyToMicroseconds(double frequency) {
+    double val = (frequency/kTimer1Frequency) * 1000;
+    return static_cast<int>(val);
 }
