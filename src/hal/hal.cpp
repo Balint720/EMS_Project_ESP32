@@ -13,6 +13,8 @@
 #include "sys/convert.h"
 #include "sys/funcgen_state.h"
 #include "sys/timer.h"
+#include "app/funcgen_state_update.h"
+#include <hal/dac.h>
 
 
 void HAL_Setup() {
@@ -38,6 +40,9 @@ void HAL_Setup() {
     debug_print("Setting up Function Generator Chip...\n");
     HAL_SetupFuncGenChip();
     debug_print("Function Generator chip setup completed!\n");
+    // debug_print("Setting up DAC...\n");
+    // HAL_SetupDAC();
+    // debug_print("DAC setup completed!");
 }
 
 static unsigned long timer = millis();
@@ -45,6 +50,7 @@ static unsigned long timer = millis();
 void HAL_Loop() {
     HAL_LoopADC();
     HAL_LoopSerialRead();
+    digitalWrite(PIN_FGENOUTPUT_LED, SYS_CurrWave.getState() == SquareWaveState::A_PLUS || SYS_CurrWave.getState() == SquareWaveState::A_MINUS); 
 }
 
 void HAL_ReactToValueChange(Char_UUID_Index cI) {
@@ -52,13 +58,20 @@ void HAL_ReactToValueChange(Char_UUID_Index cI) {
         case FREQUENCY:
             //setFreqAD9833(getFreq());
             SYS_SetTimerInterruptTime(HW_TIMERS::FUNCTION_FREQUENCY, frequencyToMicroseconds(getFreq()));
+            APP_UpdateSquareWaveFrequency(getFreq());
             break;
         case FG_STATE:
             //if (isOn()) startAD9833();
             //else        stopAD9833();
+            if (isOn()) {
+                APP_StartSquareWaveTimer(getFreq(), getPulseWidth());
+            }
+            else {
+                APP_StopSquareWaveTimer();
+            }
             break;
         case PULSEWIDTH:
-            debug_print("Pulse width change not implemented!\n");
+            APP_UpdateSquareWavePulseWidth(getPulseWidth());
             break;
         case AMPLITUDE:
             // setValueOfResistance(calcResistorValueToSet(getAmp()));
@@ -66,6 +79,12 @@ void HAL_ReactToValueChange(Char_UUID_Index cI) {
             break;
         case WAVEFORM:
             //setWaveformAD9833(getWaveform());
+            if (getWaveform() == SQUARE && isOn()) {
+                APP_StartSquareWaveTimer(getFreq(), getPulseWidth());
+            }
+            else if (getWaveform() != SQUARE) {
+                APP_StopSquareWaveTimer();
+            }
             break;
         default:
             break;

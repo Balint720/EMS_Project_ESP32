@@ -1,6 +1,6 @@
-#include <MCP4725.h>
+#include "hal/dac.h"
 
-static constexpr float kMaxVoltage = 4095;
+#include <MCP4725.h>
 
 static MCP4725 *dac_chip;
 
@@ -14,6 +14,11 @@ void setPercent(float percentage) {
     dac_chip->setPercentage(percentage);
 }
 
-void setDirect(uint16_t val) {
-    dac_chip->setValue(val);
+
+void HAL_SetDirectDAC(WaveOutput value) {
+    dac_chip->setValue(static_cast<uint16_t>(value));
+}
+
+void HAL_SetupDAC() {
+    initMCP4725();
 }

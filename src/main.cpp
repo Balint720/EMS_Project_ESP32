@@ -7,12 +7,11 @@
 #include "sys/sys.h"
 
 void setup() {
-  
-  pinMode(21, OUTPUT);
+  # pinMode(21, OUTPUT);
 
-  analogWrite(21, 128);
+  # analogWrite(21, 128);
 
-  pinMode(2, INPUT);
+  # pinMode(2, INPUT);
 
   
   // Serial
@@ -23,6 +22,7 @@ void setup() {
 
   HAL_Setup();
   APP_Setup();
+  SYS_Setup();
 
   /*
   // SPI Flash test code

@@ -56,7 +56,7 @@ static void printFuncGenRecipeVars() {
 
 static void printPotMeterRes() {
     Serial.printf("\n");
-    Serial.printf("Resistance: %f\n", getValueOfResistance());
+    // Serial.printf("Resistance: %f\n", getValueOfResistance());
 }
 
 static bool parseNumber(const char* text, double* value) {

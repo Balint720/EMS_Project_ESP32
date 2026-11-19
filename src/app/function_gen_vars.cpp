@@ -47,7 +47,7 @@ static constexpr struct funcGenVars_st funcGenVars_MIN {
 
 static constexpr struct funcGenVars_st funcGenVars_MAX {
     .waveform = SAWTOOTH,
-    .pulseWidth = 400,
+    .pulseWidth = 5000000,
     .freq = 25000000,
     .amp = 10000.0
 };

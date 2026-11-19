@@ -24,10 +24,6 @@ hw_timer_t* timerEnumToTimer(HW_TIMERS input) {
 void setupTimer() {
     timer1 = timerBegin(kTimer1Frequency);
     SYS_SetTimerInterruptTime(HW_TIMERS::FUNCTION_FREQUENCY, 500000UL);
-    timerAttachInterrupt(timer1, []() {
-        digitalWrite(PIN_FGENOUTPUT_LED, testOutput);
-        testOutput = !testOutput;
-    });
 }
 
 void SYS_SetTimerInterruptTime(HW_TIMERS timer_name, uint64_t microseconds, bool autoreload, uint64_t autoreload_cnt) {
@@ -39,6 +35,5 @@ void SYS_AttachFunctionToTimer(std::function<void>(void)) {
 }
 
 void SYS_SetupTimers() {
-    pinMode(PIN_FGENOUTPUT_LED, OUTPUT);
     setupTimer();
 }
