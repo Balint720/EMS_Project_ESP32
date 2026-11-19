@@ -6,33 +6,11 @@
 
 #include <Arduino.h>
 
-#include "hal/bluetooth_uuid.h"
+#include "hal/bluetooth/bluetooth_uuid.h"
 #include "hal/adc.h"
 
 #include "app/valchange_request.h"
-
-/*
-*   Storing values that we get from bluetooth
-*/
-static void UpdateVarsToBtVals() {
-    setAmp(HAL_BT_GetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::AMPLITUDE));
-    setPulseWidth(HAL_BT_GetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::PULSEWIDTH));
-    setFreq(HAL_BT_GetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FREQUENCY));
-    setWaveform((Waveform)HAL_BT_GetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::WAVEFORM));
-    if (HAL_BT_GetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FG_STATE)) turnOn();
-    else                                                                                turnOff();
-}
-
-/*
-*   Saving values to bluetooth values
-*/
-static void UpdateBtValsToVars() {
-    HAL_BT_SetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::AMPLITUDE, getAmp());
-    HAL_BT_SetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::PULSEWIDTH, getPulseWidth());
-    HAL_BT_SetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FREQUENCY, getFreq());
-    HAL_BT_SetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::WAVEFORM, (int)getWaveform());
-    HAL_BT_SetValueInt(Service_UUID_Index::SETTINGS, Char_UUID_Index::FG_STATE, (int)isOn());
-}
+#include <hal/bluetooth/bluetooth.h>
 
 /*
 *   Func generator variables that are inaccessible outside of this file
@@ -54,10 +32,26 @@ static constexpr struct funcGenVars_st funcGenVars_MAX {
 static bool funcGenOn = false;
 static FuncGenMode funcGenMode = FREE;
 
+/*
+*   APP Interface functions
+*/
+
 void APP_SetupFuncGen() {
     #if INCLUDE_BT
-    UpdateBtValsToVars();
+    updateBtValsToVars();
     #endif
+}
+
+void APP_SetupGlobalFuncGenVars() {
+    funcGenVars = new funcGenVars_st {
+        .waveform = SQUARE,
+        .pulseWidth = 0,
+        .freq = 1,
+        .amp = 5.0
+    };
+
+    funcGenOn = false;
+    funcGenMode = FREE;
 }
 
 void APP_LoopFuncGen() {
@@ -72,17 +66,17 @@ void APP_LoopFuncGen() {
         case RECIPE_MODE:
             if (time + currentStepTime < millis() || currentStepOfRecipe == -1) {
                 currentStepOfRecipe++;
-                if (currentStepOfRecipe >= getCurrentRecipe()->stepCount) {
+                if (currentStepOfRecipe >= APP_GetCurrentRecipe()->stepCount) {
                     debug_print("Recipe finished.\n");
                     currentStepOfRecipe = -1;
-                    turnOff();
+                    APP_TurnOffFgen();
                     funcGenMode = FREE;
                     time = 0;
                 }
                 else {
                     debug_print("Moving to step %d.\n", currentStepOfRecipe);
-                    currentStepTime = getCurrentStepTimeIndexed(currentStepOfRecipe);
-                    funcGenVars_st curr = getCurrentRecipe()->recipe[currentStepOfRecipe];
+                    currentStepTime = APP_GetCurrentStepTimeIndexed(currentStepOfRecipe);
+                    funcGenVars_st curr = APP_GetCurrentRecipe()->recipe[currentStepOfRecipe];
                     debug_print("Trying to set amplitude to %f\n", curr.amp);
                     //APP_FuncGenChangeRequest(Char_UUID_Index::AMPLITUDE, curr.amp);
                     vTaskDelay(5);
@@ -102,16 +96,27 @@ void APP_LoopFuncGen() {
     }
 }
 
-void APP_SetupGlobalFuncGenVars() {
-    funcGenVars = new funcGenVars_st {
-        .waveform = SQUARE,
-        .pulseWidth = 0,
-        .freq = 1,
-        .amp = 5.0
-    };
+/*
+*   Storing values that we get from bluetooth
+*/
+static void UpdateVarsToBtVals() {
+    APP_SetAmp(HAL_BT_GetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::AMPLITUDE));
+    APP_SetPulseWidth(HAL_BT_GetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::PULSEWIDTH));
+    APP_SetFreq(HAL_BT_GetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FREQUENCY));
+    APP_SetWaveForm((Waveform)HAL_BT_GetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::WAVEFORM));
+    if (HAL_BT_GetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FG_STATE)) APP_TurnOnFgen();
+    else                                                                                APP_TurnOffFgen();
+}
 
-    funcGenOn = false;
-    funcGenMode = FREE;
+/*
+*   Saving values to bluetooth values
+*/
+static void updateBtValsToVars() {
+    HAL_BT_SetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::AMPLITUDE, getAmp());
+    HAL_BT_SetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::PULSEWIDTH, getPulseWidth());
+    HAL_BT_SetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FREQUENCY, getFreq());
+    HAL_BT_SetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::WAVEFORM, (int)getWaveform());
+    HAL_BT_SetValueInt(Service_UUID_Index::SETTINGS, Char_UUID_Index::FG_STATE, (int)isOn());
 }
 
 /*
@@ -137,14 +142,14 @@ bool isOn() {
     return funcGenOn;
 }
 
-enum Errors setWaveform(enum Waveform w, funcGenVars_st* st) {
+enum Errors APP_SetWaveForm(enum Waveform w, funcGenVars_st* st) {
     funcGenVars_st *chosenSt = st;
     if (chosenSt == nullptr) chosenSt = funcGenVars;
     chosenSt->waveform = w;
     return NO_ERROR;
 }
 
-enum Errors setPulseWidth(unsigned int pulseWidth, funcGenVars_st* st) {
+enum Errors APP_SetPulseWidth(unsigned int pulseWidth, funcGenVars_st* st) {
     funcGenVars_st *chosenSt = st;
     if (chosenSt == nullptr) chosenSt = funcGenVars;
 
@@ -159,7 +164,7 @@ enum Errors setPulseWidth(unsigned int pulseWidth, funcGenVars_st* st) {
         return NO_ERROR;
     }
 }
-enum Errors setFreq(double freq, funcGenVars_st* st) {
+enum Errors APP_SetFreq(double freq, funcGenVars_st* st) {
     funcGenVars_st *chosenSt = st;
     if (chosenSt == nullptr) chosenSt = funcGenVars;
 
@@ -174,7 +179,7 @@ enum Errors setFreq(double freq, funcGenVars_st* st) {
         return NO_ERROR;
     }
 }
-enum Errors setAmp(double amp, funcGenVars_st* st) {
+enum Errors APP_SetAmp(double amp, funcGenVars_st* st) {
     funcGenVars_st *chosenSt = st;
     if (chosenSt == nullptr) chosenSt = funcGenVars;
 
@@ -193,17 +198,17 @@ enum Errors setAmp(double amp, funcGenVars_st* st) {
     }
 }
 
-enum Errors turnOn() {
+enum Errors APP_TurnOnFgen() {
     funcGenOn = true;
     return NO_ERROR;
 }
 
-enum Errors turnOff() {
+enum Errors APP_TurnOffFgen() {
     funcGenOn = false;
     return NO_ERROR;
 }
 
-enum Errors startRecipe() {
+enum Errors APP_StartFgenRecipe() {
     if (funcGenMode == FREE) {
         funcGenMode = RECIPE_MODE;
         return NO_ERROR;
@@ -211,7 +216,7 @@ enum Errors startRecipe() {
     else return BUSY_WITH_RECIPE;
 }
 
-enum Errors stopRecipe() {
+enum Errors APP_StopFgenRecipe() {
     if (funcGenMode == RECIPE_MODE) {
         funcGenMode = FREE;
         return NO_ERROR;

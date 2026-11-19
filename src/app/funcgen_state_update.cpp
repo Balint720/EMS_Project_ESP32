@@ -1,4 +1,4 @@
-#include "sys/funcgen_state.h"
+#include "app/funcgen_state.h"
 #include "hal/timer.h"
 #include "app/function_gen_vars.h"
 #include "app/funcgen_state_update.h"
@@ -46,8 +46,8 @@ static void advanceSquareWave(void*) {
         return;
     }
 
-    SYS_CurrWave.gotoNextState();
-    // HAL_SetDirectDAC(SYS_CurrWave.getOutput());
+    APP_CurrWave.gotoNextState();
+    // HAL_SetDirectDAC(APP_CurrWave.getOutput());
     scheduleNextState(false);
 }
 
@@ -60,7 +60,7 @@ static void scheduleNextState(bool stopExisting) {
         esp_timer_stop(squareWaveTimer);
     }
     esp_timer_start_once(squareWaveTimer,
-        static_cast<uint64_t>(getDelayForState(SYS_CurrWave.getState())));
+        static_cast<uint64_t>(getDelayForState(APP_CurrWave.getState())));
 }
 
 void APP_SetupSquareWaveTimer() {
@@ -84,8 +84,8 @@ void APP_StartSquareWaveTimer(double frequency_hz, uint32_t pulse_width_us) {
 
     esp_timer_stop(squareWaveTimer);
     squareWaveRunning = true;
-    SYS_CurrWave.turnOn();
-    SYS_CurrWave.gotoGivenState(A_PLUS);
+    APP_CurrWave.turnOn();
+    APP_CurrWave.gotoGivenState(A_PLUS);
     scheduleNextState();
 }
 
@@ -121,7 +121,7 @@ void APP_StopSquareWaveTimer() {
     if (squareWaveTimer != nullptr) {
         esp_timer_stop(squareWaveTimer);
     }
-    SYS_CurrWave.turnOff();
-    SYS_CurrWave.gotoGivenState(NEUTRAL);
-    // HAL_SetDirectDAC(SYS_CurrWave.getOutput());
+    APP_CurrWave.turnOff();
+    APP_CurrWave.gotoGivenState(NEUTRAL);
+    // HAL_SetDirectDAC(APP_CurrWave.getOutput());
 }

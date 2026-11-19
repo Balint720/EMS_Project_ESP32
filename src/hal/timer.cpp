@@ -1,4 +1,4 @@
-#include "sys/timer.h"
+#include "hal/timer.h"
 
 #include <Arduino.h>
 #include <esp32-hal-timer.h>
@@ -34,6 +34,6 @@ void SYS_AttachFunctionToTimer(std::function<void>(void)) {
     
 }
 
-void SYS_SetupTimers() {
+void HAL_SetupTimers() {
     setupTimer();
 }

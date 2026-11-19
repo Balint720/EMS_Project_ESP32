@@ -20,9 +20,9 @@ void stopAD9833();
 void resetAD9833();
 void testAD9833();
 
-void setFreqAD9833(float freq);
+void APP_SetFreqAD9833(float freq);
 float getFreqAD9833();
 int getStateAD9833();
-void setWaveformAD9833(Waveform wf);
+void APP_SetWaveFormAD9833(Waveform wf);
 
 void HAL_SetupFuncGenChip();

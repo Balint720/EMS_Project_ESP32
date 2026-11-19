@@ -4,7 +4,7 @@
 *   Bluetooth configuration file (safe version)
 */
 
-#include "hal/bluetooth_uuid.h"
+#include "hal/bluetooth/bluetooth_uuid.h"
 #include <cstdint>
 #include <BLECharacteristic.h>
 

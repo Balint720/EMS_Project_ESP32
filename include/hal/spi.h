@@ -4,12 +4,9 @@
 
 class SPIClass;
 
-int HAL_SetupSPI();
-
-// SPI pins connected to AD9833 and resistor
-#define PIN_SPI_D_1        (uint8_t)23
-#define PIN_SPI_CLK_1      (uint8_t)18
-#define PIN_SPI_CS_1       (uint8_t)5
+int     HAL_SetupSPI();
+int     HAL_SaveRecipeToFlash(const funcGenRecipe_st *recipe, int index = -1);
+int     HAL_LoadRecipeFromFlash(int, funcGenRecipe_st* out);
 
 /*
 *   SPI for AD9833 and Resistor

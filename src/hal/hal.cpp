@@ -1,24 +1,27 @@
 #include "hal/hal.h"
 
-#include "hal/bluetooth.h"
-#include "hal/bluetooth_uuid.h"
+#include "hal/bluetooth/bluetooth.h"
+#include "hal/bluetooth/bluetooth_uuid.h"
 #include "hal/web.h"
 #include "hal/funcgen_chip.h"
 #include "hal/spi.h"
 #include "hal/pot.h"
 #include "hal/adc.h"
 #include "hal/serial.h"
+#include "hal/gpio.h"
 
 #include "sys/sys.h"
 #include "sys/convert.h"
-#include "sys/funcgen_state.h"
-#include "sys/timer.h"
+#include "app/funcgen_state.h"
+#include "hal/timer.h"
 #include "app/funcgen_state_update.h"
 #include <hal/dac.h>
 
 
 void HAL_Setup() {
-
+    debug_print("Setting up GPIO pins...\n");
+    HAL_SetupGPIO();
+    debug_print("GPIO setup completed!\n");
     debug_print("Setting up ADC...\n");
     HAL_SetupADC();
     debug_print("ADC setup completed!\n");
@@ -42,7 +45,7 @@ void HAL_Setup() {
     debug_print("Function Generator chip setup completed!\n");
     // debug_print("Setting up DAC...\n");
     // HAL_SetupDAC();
-    // debug_print("DAC setup completed!");
+    // debug_print("DAC setup completed!\n");
 }
 
 static unsigned long timer = millis();
@@ -50,13 +53,13 @@ static unsigned long timer = millis();
 void HAL_Loop() {
     HAL_LoopADC();
     HAL_LoopSerialRead();
-    digitalWrite(PIN_FGENOUTPUT_LED, SYS_CurrWave.getState() == SquareWaveState::A_PLUS || SYS_CurrWave.getState() == SquareWaveState::A_MINUS); 
+    digitalWrite(PIN_FGENOUTPUT_LED, APP_CurrWave.getState() == SquareWaveState::A_PLUS || APP_CurrWave.getState() == SquareWaveState::A_MINUS); 
 }
 
 void HAL_ReactToValueChange(Char_UUID_Index cI) {
     switch (cI) {
         case FREQUENCY:
-            //setFreqAD9833(getFreq());
+            //APP_SetFreqAD9833(getFreq());
             SYS_SetTimerInterruptTime(HW_TIMERS::FUNCTION_FREQUENCY, frequencyToMicroseconds(getFreq()));
             APP_UpdateSquareWaveFrequency(getFreq());
             break;
@@ -78,7 +81,7 @@ void HAL_ReactToValueChange(Char_UUID_Index cI) {
             //setValueOfResistance((getAmp()/10000)*255);
             break;
         case WAVEFORM:
-            //setWaveformAD9833(getWaveform());
+            //APP_SetWaveFormAD9833(getWaveform());
             if (getWaveform() == SQUARE && isOn()) {
                 APP_StartSquareWaveTimer(getFreq(), getPulseWidth());
             }
@@ -89,35 +92,4 @@ void HAL_ReactToValueChange(Char_UUID_Index cI) {
         default:
             break;
     }
-}
-
-int HAL_BT_GetValueInt(Service_UUID_Index sI, Char_UUID_Index cI) {
-    return packetToInt(getCharacteristicValue(sI, cI));
-}
-
-float HAL_BT_GetValueFloat(Service_UUID_Index sI, Char_UUID_Index cI) {
-    return packetToDouble(getCharacteristicValue(sI, cI));
-}
-
-double HAL_BT_GetValueDouble(Service_UUID_Index sI, Char_UUID_Index cI) {
-    return packetToDouble(getCharacteristicValue(sI, cI));
-}
-
-void HAL_BT_SetValueInt(Service_UUID_Index sI, Char_UUID_Index cI, int value) {
-    setCharacteristicValue(sI, cI, intToPacket(value));
-}
-
-void HAL_BT_SetValueFloat(Service_UUID_Index sI, Char_UUID_Index cI, float value) {
-    setCharacteristicValue(sI, cI, doubleToPacket(value));
-}
-void HAL_BT_SetValueDouble(Service_UUID_Index sI, Char_UUID_Index cI, double value) {
-    setCharacteristicValue(sI, cI, doubleToPacket(value));
-}
-
-int HAL_SaveRecipeToFlash(const funcGenRecipe_st *recipe, int index) {
-    return writeRecipe(index, recipe);
-}
-
-int HAL_LoadRecipeFromFlash(int index, funcGenRecipe_st* out) {
-    return readRecipe(index, out);
 }

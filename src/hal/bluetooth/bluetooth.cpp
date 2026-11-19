@@ -1,7 +1,7 @@
-#include "hal/bluetooth.h"
+#include "hal/bluetooth/bluetooth.h"
 
-#include "hal/bluetooth_settings.h"
-#include "hal/bluetooth_callbacks.h"
+#include "hal/bluetooth/bluetooth_settings.h"
+#include "hal/bluetooth/bluetooth_callbacks.h"
 
 #include "sys/sys.h"
 
@@ -11,6 +11,7 @@
 #include <BLEServer.h>
 #include <BLEUtils.h>
 #include <BLEDescriptor.h>
+#include <sys/convert.h>
 
 #define DESC_CHARACTERISTIC_USER_DESCRIPTION "2901"
 
@@ -137,4 +138,27 @@ void setCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI, const std
 
 void clientDisconnectCallback() {
 
+}
+
+int HAL_BT_GetValueInt(Service_UUID_Index sI, Char_UUID_Index cI) {
+    return packetToInt(getCharacteristicValue(sI, cI));
+}
+
+float HAL_BT_GetValueFloat(Service_UUID_Index sI, Char_UUID_Index cI) {
+    return packetToDouble(getCharacteristicValue(sI, cI));
+}
+
+double HAL_BT_GetValueDouble(Service_UUID_Index sI, Char_UUID_Index cI) {
+    return packetToDouble(getCharacteristicValue(sI, cI));
+}
+
+void HAL_BT_SetValueInt(Service_UUID_Index sI, Char_UUID_Index cI, int value) {
+    setCharacteristicValue(sI, cI, intToPacket(value));
+}
+
+void HAL_BT_SetValueFloat(Service_UUID_Index sI, Char_UUID_Index cI, float value) {
+    setCharacteristicValue(sI, cI, doubleToPacket(value));
+}
+void HAL_BT_SetValueDouble(Service_UUID_Index sI, Char_UUID_Index cI, double value) {
+    setCharacteristicValue(sI, cI, doubleToPacket(value));
 }

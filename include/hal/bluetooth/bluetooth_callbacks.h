@@ -4,7 +4,7 @@
 #include <BLECharacteristic.h>
 #include <BLEDescriptor.h>
 
-#include "hal/bluetooth_uuid.h"
+#include "hal/bluetooth/bluetooth_uuid.h"
 
 class OurServerCallbacks : public BLEServerCallbacks {
     public:

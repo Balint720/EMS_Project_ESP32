@@ -49,6 +49,13 @@ enum FuncGenMode {
 };
 
 /*
+*   HAL Interface functions
+*/
+void APP_LoopFuncGen();
+void APP_SetupFuncGen();
+void APP_SetupGlobalFuncGenVars();
+
+/*
 *   Getters and setters
 */
 enum Waveform getWaveform();
@@ -57,20 +64,14 @@ double getFreq();
 double getAmp();
 bool isOn();
 
-enum Errors setWaveform(enum Waveform, funcGenVars_st *st = nullptr);
-enum Errors setPulseWidth(unsigned int, funcGenVars_st *st = nullptr);
-enum Errors setFreq(double, funcGenVars_st *st = nullptr);
-enum Errors setAmp(double, funcGenVars_st *st = nullptr);
+enum Errors APP_SetWaveForm(enum Waveform, funcGenVars_st *st = nullptr);
+enum Errors APP_SetPulseWidth(unsigned int, funcGenVars_st *st = nullptr);
+enum Errors APP_SetFreq(double, funcGenVars_st *st = nullptr);
+enum Errors APP_SetAmp(double, funcGenVars_st *st = nullptr);
 
-enum Errors turnOn();
-enum Errors turnOff();
+enum Errors APP_TurnOnFgen();
+enum Errors APP_TurnOffFgen();
 
-enum Errors startRecipe();
-enum Errors stopRecipe();
+enum Errors APP_StartFgenRecipe();
+enum Errors APP_StopFgenRecipe();
 
-/*
-*   HAL Interface functions
-*/
-void APP_LoopFuncGen();
-void APP_SetupFuncGen();
-void APP_SetupGlobalFuncGenVars();

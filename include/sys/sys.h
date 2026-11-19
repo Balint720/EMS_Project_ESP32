@@ -9,3 +9,4 @@
 #endif
 
 void SYS_Setup();
+void SYS_Loop();

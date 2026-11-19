@@ -3,6 +3,7 @@
 #include <Arduino.h>
 
 #include "sys/sys.h"
+#include <hal/gpio.h>
 
 static uint32_t fGenOutputmV = 0;
 static uint16_t fGenOutput = 0;

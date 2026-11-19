@@ -1,10 +1,13 @@
-#include "sys/funcgen_state.h"
+#include "app/funcgen_state.h"
 #include <algorithm>
 #include <sys/sys.h>
 
 #include "hal/dac.h"
+#include <hal/gpio.h>
 
 static constexpr WaveOutput kMaxVal = (static_cast<WaveOutput>(1) << ADC_BIT_COUNT) - 1;
+
+SquareWave APP_CurrWave = SquareWave{};
 
 SquareWave::SquareWave() {
     reset();
@@ -110,5 +113,3 @@ SquareWaveState SquareWave::getState() {
 WaveOutput SquareWave::getOutput() {
     return output_;
 }
-
-SquareWave SYS_CurrWave = SquareWave{};

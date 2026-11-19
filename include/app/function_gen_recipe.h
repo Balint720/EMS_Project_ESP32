@@ -20,27 +20,27 @@ enum RecipeVars {
 void APP_SetupGlobalRecipe();
 void APP_LoopFuncGenRecipe();
 
-struct funcGenVars_st* getCurrentRecipeStep();
-struct funcGenVars_st* getCurrentRecipeStepIndexed(unsigned int);
-struct funcGenRecipe_st* getCurrentRecipe();
-time_t getCurrentStepTime();
-time_t getCurrentStepTimeIndexed(unsigned int index);
+struct funcGenVars_st* APP_GetCurrentRecipeStep();
+struct funcGenVars_st* APP_GetCurrentRecipeStepIndexed(unsigned int);
+struct funcGenRecipe_st* APP_GetCurrentRecipe();
+time_t APP_GetCurrentStepTime();
+time_t APP_GetCurrentStepTimeIndexed(unsigned int index);
 
-int setCurrentRecipe(const struct funcGenRecipe_st&);
-int setCurrentStepTime(time_t newTime);
-int saveCurrentRecipe();
-int loadCurrentRecipe(int);
+int APP_SetCurrentRecipe(const struct funcGenRecipe_st&);
+int APP_SetCurrentStepTime(time_t newTime);
+int APP_SaveCurrentRecipe();
+int APP_LoadCurrentRecipe(int);
 
-int getRecipeSelectionNumber();
-int getRecipeStepNumber();
-bool setRecipeSelectionNumber(unsigned int);
-bool setRecipeStepNumber(unsigned int);
+int APP_GetRecipeSelectionNumber();
+int APP_GetRecipeStepNumber();
+bool APP_SetRecipeSelectionNumber(unsigned int);
+bool APP_SetRecipeStepNumber(unsigned int);
 
-bool actionOnRecipe(uint8_t command, uint8_t value);
+bool APP_ActionOnRecipe(uint8_t command, uint8_t value);
 
 template <typename T>
-int updateCurrentRecipe(unsigned int step, RecipeVars valType, T value) {
-    funcGenVars_st* currStep = getCurrentRecipeStep();
+int APP_UpdateCurrentRecipe(unsigned int step, RecipeVars valType, T value) {
+    funcGenVars_st* currStep = APP_GetCurrentRecipeStep();
     if (currStep == nullptr) return -1;
 
     switch (valType) {

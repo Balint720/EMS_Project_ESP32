@@ -5,7 +5,7 @@
 
 #include <limits>
 
-#include "sys/timer.h"
+#include "hal/timer.h"
 
 typedef uint8_t byte;
 

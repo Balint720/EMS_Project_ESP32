@@ -7,6 +7,7 @@
 #include <limits.h>
 
 #include <SPI.h>
+#include <hal/gpio.h>
 
 #define SPI_DATA_MAX_CHUNK_SIZE 1024
 
@@ -283,4 +284,12 @@ int readRecipe(int recipeIndex, funcGenRecipe_st *outRecipe) {
         return 0;
     }
     else return x;
+}
+
+int HAL_SaveRecipeToFlash(const funcGenRecipe_st *recipe, int index) {
+    return writeRecipe(index, recipe);
+}
+
+int HAL_LoadRecipeFromFlash(int index, funcGenRecipe_st* out) {
+    return readRecipe(index, out);
 }

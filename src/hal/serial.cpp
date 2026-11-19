@@ -39,9 +39,9 @@ static void printFuncGenVars() {
 }
 
 static void printFuncGenRecipeVars() {
-    Serial.printf("\nCurrent Selected Recipe: %d\n", getRecipeSelectionNumber());
-    Serial.printf("Current Selected step: %d\n\n", getRecipeStepNumber());
-    const funcGenVars_st *helper = getCurrentRecipeStep();
+    Serial.printf("\nCurrent Selected Recipe: %d\n", APP_GetRecipeSelectionNumber());
+    Serial.printf("Current Selected step: %d\n\n", APP_GetRecipeStepNumber());
+    const funcGenVars_st *helper = APP_GetCurrentRecipeStep();
     if (helper == nullptr) {
         Serial.printf("Recipe step doesn't exist.\n");
     }
@@ -50,7 +50,7 @@ static void printFuncGenRecipeVars() {
         Serial.printf("Pulse width: %d\n", helper->pulseWidth);
         Serial.printf("Frequency: %f\n", helper->freq);
         Serial.printf("Waveform: %d\n", helper->waveform);
-        Serial.printf("Time: %lld\n", getCurrentStepTime());
+        Serial.printf("Time: %lld\n", APP_GetCurrentStepTime());
     }
 }
 
@@ -76,7 +76,7 @@ static Errors setSerialValue(const char* name, const char* text, Char_UUID_Index
         double value;
         if (!parseNumber(text, &value)) return INVALID_INPUT;
         *changedValue = FREQUENCY;
-        return setFreq(value);
+        return APP_SetFreq(value);
     }
 
     if (strcmp(name, SerialCommands::ValueNames::kPulsewidth) == 0) {
@@ -88,14 +88,14 @@ static Errors setSerialValue(const char* name, const char* text, Char_UUID_Index
             return INVALID_INPUT;
         }
         *changedValue = PULSEWIDTH;
-        return setPulseWidth(static_cast<unsigned int>(value));
+        return APP_SetPulseWidth(static_cast<unsigned int>(value));
     }
 
     if (strcmp(name, SerialCommands::ValueNames::kAmplitude) == 0) {
         double value;
         if (!parseNumber(text, &value)) return INVALID_INPUT;
         *changedValue = AMPLITUDE;
-        return setAmp(value);
+        return APP_SetAmp(value);
     }
 
     if (strcmp(name, SerialCommands::ValueNames::kWaveform) == 0) {
@@ -107,7 +107,7 @@ static Errors setSerialValue(const char* name, const char* text, Char_UUID_Index
         else return INVALID_INPUT;
 
         *changedValue = WAVEFORM;
-        return setWaveform(waveform);
+        return APP_SetWaveForm(waveform);
     }
 
     if (strcmp(name, SerialCommands::ValueNames::kResistance) == 0) {
@@ -123,10 +123,10 @@ static Errors setSerialValue(const char* name, const char* text, Char_UUID_Index
 static void resetFunctionGenerator() {
     resetAD9833();
     /*turnOff();
-    setWaveform(SQUARE);
-    setPulseWidth(0);
-    setFreq(1);
-    setAmp(5.0);
+    APP_SetWaveForm(SQUARE);
+    APP_SetPulseWidth(0);
+    APP_SetFreq(1);
+    APP_SetAmp(5.0);
 
     HAL_ReactToValueChange(FG_STATE);
     HAL_ReactToValueChange(WAVEFORM);
@@ -169,7 +169,7 @@ static void readSerialCommands() {
         }
 
         const bool turnOnRequested = strcmp(command, SerialCommands::Commands::kOn) == 0;
-        const Errors result = turnOnRequested ? turnOn() : turnOff();
+        const Errors result = turnOnRequested ? APP_TurnOnFgen() : APP_TurnOffFgen();
         if (result == NO_ERROR) {
             HAL_ReactToValueChange(FG_STATE);
             Serial.println(turnOnRequested ? "Turned on successfully." : "Turned off successfully.");

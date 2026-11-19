@@ -1,9 +1,9 @@
-#include "hal/bluetooth_callbacks.h"
+#include "hal/bluetooth/bluetooth_callbacks.h"
 
 #include <Arduino.h>
 #include <BLEDevice.h>
 
-#include "hal/bluetooth_uuid.h"
+#include "hal/bluetooth/bluetooth_uuid.h"
 
 #include "app/valchange_request.h"
 

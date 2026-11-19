@@ -52,4 +52,4 @@ class SquareWave {
         WaveOutput getOutput();
 };
 
-extern SquareWave SYS_CurrWave;
+extern SquareWave APP_CurrWave;

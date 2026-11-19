@@ -2,6 +2,8 @@
 
 #include "hal/hal.h"
 #include "sys/convert.h"
+#include "hal/bluetooth/bluetooth.h"
+#include "hal/spi.h"
 
 #ifndef MAX_RECIPE_STEP_COUNT
     #warning MAX_RECIPE_STEP_COUNT is undefined: Default count of 20 is used
@@ -17,13 +19,13 @@ static unsigned long int lastCheck = millis();
 /*
 *   Saving values to bluetooth values
 */
-static void UpdateBtValsToVars() {
-    funcGenVars_st *helper = getCurrentRecipeStep();
+static void updateBtValsToVars() {
+    funcGenVars_st *helper = APP_GetCurrentRecipeStep();
     HAL_BT_SetValueDouble(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_AMPLITUDE, helper->amp);
     HAL_BT_SetValueInt(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_PULSEWIDTH, helper->pulseWidth);
     HAL_BT_SetValueDouble(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_FREQUENCY, helper->freq);
     HAL_BT_SetValueInt(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_WAVEFORM, (int)helper->waveform);
-    HAL_BT_SetValueInt(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_TIME, getCurrentStepTime());
+    HAL_BT_SetValueInt(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_TIME, APP_GetCurrentStepTime());
     HAL_BT_SetValueInt(Service_UUID_Index::SETTINGS, Char_UUID_Index::RECIPE_INFO, combine8to16(selectedRecipe, selectedStep));
 }
 
@@ -36,22 +38,22 @@ void APP_SetupGlobalRecipe() {
         debug_print("Recipe found at index 0, loaded.\n");
     }
 
-    // UpdateBtValsToVars();
+    // updateBtValsToVars();
 }
 
 void APP_LoopFuncGenRecipe() {
 
 }
 
-funcGenRecipe_st* getCurrentRecipe() {
+funcGenRecipe_st* APP_GetCurrentRecipe() {
     return currRecipe;
 }
 
-struct funcGenVars_st* getCurrentRecipeStep() {
-    return getCurrentRecipeStepIndexed(selectedStep);
+struct funcGenVars_st* APP_GetCurrentRecipeStep() {
+    return APP_GetCurrentRecipeStepIndexed(selectedStep);
 }
 
-struct funcGenVars_st* getCurrentRecipeStepIndexed(unsigned int s) {
+struct funcGenVars_st* APP_GetCurrentRecipeStepIndexed(unsigned int s) {
     if (s > currRecipe->stepCount - 1) {
         if (s == currRecipe->stepCount || s < MAX_RECIPE_STEP_COUNT) {
             debug_print("New empty step added\n");
@@ -66,18 +68,18 @@ struct funcGenVars_st* getCurrentRecipeStepIndexed(unsigned int s) {
     return &(currRecipe->recipe[s]);
 }
 
-time_t getCurrentStepTime() {
+time_t APP_GetCurrentStepTime() {
     return currRecipe->time[selectedStep];
 }
 
-time_t getCurrentStepTimeIndexed(unsigned int index) {
+time_t APP_GetCurrentStepTimeIndexed(unsigned int index) {
     if (index < MAX_RECIPE_STEP_COUNT) {
         return currRecipe->time[index];
     }
     else return 0;
 }
 
-int setCurrentRecipe(const funcGenRecipe_st &newRecipe) {
+int APP_SetCurrentRecipe(const funcGenRecipe_st &newRecipe) {
     if (newRecipe.stepCount > MAX_RECIPE_STEP_COUNT) {
         return -1;
     }
@@ -89,28 +91,28 @@ int setCurrentRecipe(const funcGenRecipe_st &newRecipe) {
     return 0;
 }
 
-int setCurrentStepTime(time_t newTime) {
+int APP_SetCurrentStepTime(time_t newTime) {
     currRecipe->time[selectedStep] = newTime;
     return 0;
 }
 
-int saveCurrentRecipe() {
+int APP_SaveCurrentRecipe() {
     return HAL_SaveRecipeToFlash(currRecipe);
 }
 
-int loadCurrentRecipe(int index) {
+int APP_LoadCurrentRecipe(int index) {
     return HAL_LoadRecipeFromFlash(index, currRecipe);
 }
 
-int getRecipeSelectionNumber() {
+int APP_GetRecipeSelectionNumber() {
     return selectedRecipe;
 }
 
-int getRecipeStepNumber() {
+int APP_GetRecipeStepNumber() {
     return selectedStep;
 }
 
-bool setRecipeSelectionNumber(unsigned int num) {
+bool APP_SetRecipeSelectionNumber(unsigned int num) {
     if (num >= MAX_RECIPE_COUNT) {
         return false;
     }
@@ -133,7 +135,7 @@ bool setRecipeSelectionNumber(unsigned int num) {
     
     return true;
 }
-bool setRecipeStepNumber(unsigned int num) {
+bool APP_SetRecipeStepNumber(unsigned int num) {
     debug_print("Trying to set step number to %d\n", num);
     if (num >= currRecipe->stepCount) {
         if (num == currRecipe->stepCount) {
@@ -164,7 +166,7 @@ bool setRecipeStepNumber(unsigned int num) {
 #define ABORT_RECIPE            0xAF
 #define SAVE_RECIPE_TO_FLASH    0xCC
 
-bool actionOnRecipe(uint8_t command, uint8_t value) {
+bool APP_ActionOnRecipe(uint8_t command, uint8_t value) {
     switch (command) {
         case SET_STEP_COUNT:
             if (value <= MAX_RECIPE_STEP_COUNT && value > 0) {
@@ -179,7 +181,7 @@ bool actionOnRecipe(uint8_t command, uint8_t value) {
             return true;
         case START_RECIPE:
         {
-            bool x = (startRecipe() == 0);
+            bool x = (APP_StartFgenRecipe() == 0);
             if (x) {
                 debug_print("Recipe started.\n");
             } 
@@ -189,7 +191,7 @@ bool actionOnRecipe(uint8_t command, uint8_t value) {
             return x;
         }
         case ABORT_RECIPE:
-            return (stopRecipe() == 0);
+            return (APP_StopFgenRecipe() == 0);
         case SAVE_RECIPE_TO_FLASH:
             if (HAL_SaveRecipeToFlash(currRecipe, selectedRecipe) == 0) {
                 debug_print("Recipe save to %d index successful.\n", selectedRecipe);

@@ -6,6 +6,7 @@
 #include "hal/spi.h"
 
 #include "sys/sys.h"
+#include <hal/gpio.h>
 
 
 static AD9833 *fgChip;
@@ -34,7 +35,7 @@ void testAD9833() {
     fgChip->setWave(AD9833_SQUARE1);
 }
 
-void setFreqAD9833(float freq) {
+void APP_SetFreqAD9833(float freq) {
     fgChip->setFrequency(freq);
 }
 
@@ -42,7 +43,7 @@ float getFreqAD9833() {
     return fgChip->getFrequency();
 }
 
-void setWaveformAD9833(Waveform wf) {
+void APP_SetWaveFormAD9833(Waveform wf) {
     switch (wf) {
         case SINUS:
             fgChip->setWave(AD9833_SINE);

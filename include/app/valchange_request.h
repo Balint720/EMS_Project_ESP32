@@ -6,7 +6,7 @@
 *   I forgot the rest of the comment... I got distracted by something
 */
 #include "app/function_gen_vars.h"
-#include "hal/bluetooth_uuid.h"
+#include "hal/bluetooth/bluetooth_uuid.h"
 #include "hal/hal.h"
 #include "sys/sys.h"
 
@@ -16,28 +16,28 @@ template <typename T>
 bool APP_FuncGenChangeRequest(enum Char_UUID_Index fvt, T val) {
     switch (fvt) {
         case Char_UUID_Index::WAVEFORM:
-            if (setWaveform((Waveform)val) == NO_ERROR) {
+            if (APP_SetWaveForm((Waveform)val) == NO_ERROR) {
                 HAL_ReactToValueChange(Char_UUID_Index::WAVEFORM);
                 debug_print("Waveform changed to %d.\n", val);
                 return true;
             }
             else return false;
         case Char_UUID_Index::PULSEWIDTH:
-            if (setPulseWidth(val) == NO_ERROR) {
+            if (APP_SetPulseWidth(val) == NO_ERROR) {
                 HAL_ReactToValueChange(Char_UUID_Index::WAVEFORM);
                 debug_print("Pulsewidth changed to %d.\n", val);
                 return true;
             }
             else return false;
         case Char_UUID_Index::FREQUENCY:
-            if (setFreq(val) == NO_ERROR) {
+            if (APP_SetFreq(val) == NO_ERROR) {
                 HAL_ReactToValueChange(Char_UUID_Index::FREQUENCY);
                 debug_print("Frequency changed to %f.\n", val);
                 return true;
             }
             else return false;
         case Char_UUID_Index::AMPLITUDE:
-            if (setAmp(val) == NO_ERROR) {
+            if (APP_SetAmp(val) == NO_ERROR) {
                 HAL_ReactToValueChange(Char_UUID_Index::AMPLITUDE);
                 debug_print("Amplitude changed to %f.\n", val);
                 return true;
@@ -45,10 +45,10 @@ bool APP_FuncGenChangeRequest(enum Char_UUID_Index fvt, T val) {
             else return false;
         case Char_UUID_Index::FG_STATE:
             if (val) {
-                return turnOn();
+                return APP_TurnOnFgen();
             }
             else {
-                return turnOff();
+                return APP_TurnOffFgen();
             }
         case Char_UUID_Index::RECIPE_INFO:
         {
@@ -63,8 +63,8 @@ bool APP_FuncGenChangeRequest(enum Char_UUID_Index fvt, T val) {
     #error No int endianness defined
 #endif
             debug_print("Recipe: %x\tStep: %x\n", rec, step);
-            if (setRecipeSelectionNumber(rec)) {
-                if (setRecipeStepNumber(step)) {
+            if (APP_SetRecipeSelectionNumber(rec)) {
+                if (APP_SetRecipeStepNumber(step)) {
                     return true;
                 }
             }
@@ -76,30 +76,30 @@ bool APP_FuncGenChangeRequest(enum Char_UUID_Index fvt, T val) {
             uint8_t cmd = ((*x) >> 8);
             uint8_t v = (*x);
             debug_print("Cmd: %x\tVal: %x\n", cmd, v);
-            return actionOnRecipe(cmd, v);
+            return APP_ActionOnRecipe(cmd, v);
         }
         case Char_UUID_Index::RECIPE_WAVEFORM:
-            if (setWaveform((Waveform)val, getCurrentRecipeStep()) == NO_ERROR) {
+            if (APP_SetWaveForm((Waveform)val, APP_GetCurrentRecipeStep()) == NO_ERROR) {
                 return true;
             }
             else return false;
         case Char_UUID_Index::RECIPE_PULSEWIDTH:
-            if (setPulseWidth(val, getCurrentRecipeStep()) == NO_ERROR) {
+            if (APP_SetPulseWidth(val, APP_GetCurrentRecipeStep()) == NO_ERROR) {
                 return true;
             }
             else return false;
         case Char_UUID_Index::RECIPE_FREQUENCY:
-            if (setFreq(val, getCurrentRecipeStep()) == NO_ERROR) {
+            if (APP_SetFreq(val, APP_GetCurrentRecipeStep()) == NO_ERROR) {
                 return true;
             }
             else return false;
         case Char_UUID_Index::RECIPE_AMPLITUDE:
-            if (setAmp(val, getCurrentRecipeStep()) == NO_ERROR) {
+            if (APP_SetAmp(val, APP_GetCurrentRecipeStep()) == NO_ERROR) {
                 return true;
             }
             else return false;
         case Char_UUID_Index::RECIPE_TIME:
-            return (setCurrentStepTime(val) == 0);
+            return (APP_SetCurrentStepTime(val) == 0);
         default:
             return false;
     }
@@ -119,16 +119,16 @@ T APP_FuncGenGetRequest(enum Char_UUID_Index fvt, int index = 0) {
         case FG_STATE:
             return (T)isOn();
         case RECIPE_INFO:
-            if (index == 0)     return (T)getRecipeSelectionNumber();
-            else                return (T)getRecipeStepNumber();
+            if (index == 0)     return (T)APP_GetRecipeSelectionNumber();
+            else                return (T)APP_GetRecipeStepNumber();
         case RECIPE_WAVEFORM:
-            return (T)getCurrentRecipeStep()->waveform;
+            return (T)APP_GetCurrentRecipeStep()->waveform;
         case RECIPE_PULSEWIDTH:
-            return (T)getCurrentRecipeStep()->pulseWidth;
+            return (T)APP_GetCurrentRecipeStep()->pulseWidth;
         case RECIPE_FREQUENCY:
-            return (T)getCurrentRecipeStep()->freq;
+            return (T)APP_GetCurrentRecipeStep()->freq;
         case RECIPE_AMPLITUDE:
-            return (T)getCurrentRecipeStep()->amp;
+            return (T)APP_GetCurrentRecipeStep()->amp;
         default:
             return 0;
     }
