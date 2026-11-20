@@ -23,7 +23,7 @@ void clientDisconnectCallback();
 /*
 *   Bluetooth Setup for Hardware Layer
 */
-void HAL_SetupBluetooth() {
+void HAL::HAL_SetupBluetooth() {
     debug_print("Setting up Bluetooth Low Energy\n");
     
     BLEDevice::init(b_s.device_name);
@@ -94,7 +94,7 @@ void HAL_SetupBluetooth() {
 }
 
 
-std::string getCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI) {
+std::string HAL::getCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI) {
     if (pServer == nullptr) {
         Serial.println("ERROR: Bluetooth Server is not initialized!!!");
         return "";
@@ -115,7 +115,7 @@ std::string getCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI) {
     return std::string(value.c_str(), value.length());
 }
 
-void setCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI, const std::string &val) {
+void HAL::setCharacteristicValue(Service_UUID_Index sI, Char_UUID_Index cI, const std::string &val) {
     if (pServer == nullptr) {
         Serial.println("ERROR: Bluetooth Server is not initialized!!!");
         return;
@@ -140,25 +140,25 @@ void clientDisconnectCallback() {
 
 }
 
-int HAL_BT_GetValueInt(Service_UUID_Index sI, Char_UUID_Index cI) {
+int HAL::HAL_BT_GetValueInt(Service_UUID_Index sI, Char_UUID_Index cI) {
     return packetToInt(getCharacteristicValue(sI, cI));
 }
 
-float HAL_BT_GetValueFloat(Service_UUID_Index sI, Char_UUID_Index cI) {
+float HAL::HAL_BT_GetValueFloat(Service_UUID_Index sI, Char_UUID_Index cI) {
     return packetToDouble(getCharacteristicValue(sI, cI));
 }
 
-double HAL_BT_GetValueDouble(Service_UUID_Index sI, Char_UUID_Index cI) {
+double HAL::HAL_BT_GetValueDouble(Service_UUID_Index sI, Char_UUID_Index cI) {
     return packetToDouble(getCharacteristicValue(sI, cI));
 }
 
-void HAL_BT_SetValueInt(Service_UUID_Index sI, Char_UUID_Index cI, int value) {
+void HAL::HAL_BT_SetValueInt(Service_UUID_Index sI, Char_UUID_Index cI, int value) {
     setCharacteristicValue(sI, cI, intToPacket(value));
 }
 
-void HAL_BT_SetValueFloat(Service_UUID_Index sI, Char_UUID_Index cI, float value) {
+void HAL::HAL_BT_SetValueFloat(Service_UUID_Index sI, Char_UUID_Index cI, float value) {
     setCharacteristicValue(sI, cI, doubleToPacket(value));
 }
-void HAL_BT_SetValueDouble(Service_UUID_Index sI, Char_UUID_Index cI, double value) {
+void HAL::HAL_BT_SetValueDouble(Service_UUID_Index sI, Char_UUID_Index cI, double value) {
     setCharacteristicValue(sI, cI, doubleToPacket(value));
 }

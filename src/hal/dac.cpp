@@ -15,10 +15,10 @@ void setPercent(float percentage) {
 }
 
 
-void HAL_SetDirectDAC(WaveOutput value) {
+void HAL::HAL_SetDirectDAC(WaveOutput value) {
     dac_chip->setValue(static_cast<uint16_t>(value));
 }
 
-void HAL_SetupDAC() {
+void HAL::HAL_SetupDAC() {
     initMCP4725();
 }

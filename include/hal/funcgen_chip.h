@@ -8,21 +8,23 @@
 #include <stdint.h>
 #include <algorithm>
 
-// Function that calculates what resistance to set based on given milliAmps
-// Is only true for current setup, it is not hardware independent
-static inline uint16_t calcResistorValueToSet(double mA) {
-    return std::min((uint16_t)(std::max(160.0 * ((mA-2.0)/100.0), 0.0)), (uint16_t)160);
+namespace HAL {
+    // Function that calculates what resistance to set based on given milliAmps
+    // Is only true for current setup, it is not hardware independent
+    static inline uint16_t calcResistorValueToSet(double mA) {
+        return std::min((uint16_t)(std::max(160.0 * ((mA-2.0)/100.0), 0.0)), (uint16_t)160);
+    }
+
+    void initAD9833();
+    void startAD9833();
+    void stopAD9833();
+    void resetAD9833();
+    void testAD9833();
+
+    void setFreqAD9833(float freq);
+    float getFreqAD9833();
+    int getStateAD9833();
+    void setWaveFormAD9833(Waveform wf);
+
+    void HAL_SetupFuncGenChip();
 }
-
-void initAD9833();
-void startAD9833();
-void stopAD9833();
-void resetAD9833();
-void testAD9833();
-
-void APP_SetFreqAD9833(float freq);
-float getFreqAD9833();
-int getStateAD9833();
-void APP_SetWaveFormAD9833(Waveform wf);
-
-void HAL_SetupFuncGenChip();

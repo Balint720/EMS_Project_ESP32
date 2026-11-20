@@ -100,11 +100,11 @@ void APP_LoopFuncGen() {
 *   Storing values that we get from bluetooth
 */
 static void UpdateVarsToBtVals() {
-    APP_SetAmp(HAL_BT_GetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::AMPLITUDE));
-    APP_SetPulseWidth(HAL_BT_GetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::PULSEWIDTH));
-    APP_SetFreq(HAL_BT_GetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FREQUENCY));
-    APP_SetWaveForm((Waveform)HAL_BT_GetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::WAVEFORM));
-    if (HAL_BT_GetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FG_STATE)) APP_TurnOnFgen();
+    APP_SetAmp(HAL::HAL_BT_GetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::AMPLITUDE));
+    APP_SetPulseWidth(HAL::HAL_BT_GetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::PULSEWIDTH));
+    APP_SetFreq(HAL::HAL_BT_GetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FREQUENCY));
+    APP_SetWaveForm((Waveform)HAL::HAL_BT_GetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::WAVEFORM));
+    if (HAL::HAL_BT_GetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FG_STATE)) APP_TurnOnFgen();
     else                                                                                APP_TurnOffFgen();
 }
 
@@ -112,11 +112,11 @@ static void UpdateVarsToBtVals() {
 *   Saving values to bluetooth values
 */
 static void updateBtValsToVars() {
-    HAL_BT_SetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::AMPLITUDE, getAmp());
-    HAL_BT_SetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::PULSEWIDTH, getPulseWidth());
-    HAL_BT_SetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FREQUENCY, getFreq());
-    HAL_BT_SetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::WAVEFORM, (int)getWaveform());
-    HAL_BT_SetValueInt(Service_UUID_Index::SETTINGS, Char_UUID_Index::FG_STATE, (int)isOn());
+    HAL::HAL_BT_SetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::AMPLITUDE, getAmp());
+    HAL::HAL_BT_SetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::PULSEWIDTH, getPulseWidth());
+    HAL::HAL_BT_SetValueDouble(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::FREQUENCY, getFreq());
+    HAL::HAL_BT_SetValueInt(Service_UUID_Index::FUNCTIONGEN, Char_UUID_Index::WAVEFORM, (int)getWaveform());
+    HAL::HAL_BT_SetValueInt(Service_UUID_Index::SETTINGS, Char_UUID_Index::FG_STATE, (int)isOn());
 }
 
 /*

@@ -13,13 +13,13 @@ void setup() {
   Serial.println("Hello world!");
   debug_print("Debug print mode on!\n");
 
-  HAL_Setup();
+  HAL::HAL_Setup();
   APP_Setup();
   SYS_Setup();
 }
 
 void loop() {
-  HAL_Loop();
+  HAL::HAL_Loop();
   APP_Loop();
   SYS_Loop();
 }

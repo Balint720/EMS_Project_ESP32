@@ -9,6 +9,8 @@
 /*
 *   Base Hardware Abstraction Layer functions
 */
-void    HAL_Setup();
-void    HAL_Loop();
-void    HAL_ReactToValueChange(Char_UUID_Index);
+namespace HAL {
+    void    HAL_Setup();
+    void    HAL_Loop();
+    void    HAL_ReactToValueChange(Char_UUID_Index);
+}

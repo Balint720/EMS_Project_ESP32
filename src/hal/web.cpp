@@ -11,7 +11,7 @@ static WiFiServer *server;
 
 static void scanNetworks();
 
-void HAL_SetupWiFi() {
+void HAL::HAL_SetupWiFi() {
     scanNetworks();
   // check for the presence of the shield:
   if (WiFi.status() == WL_NO_SHIELD) {
@@ -44,14 +44,14 @@ void HAL_SetupWiFi() {
   }
 }
 
-void HAL_SetupWebServer() {
+void HAL::HAL_SetupWebServer() {
     // Setting up server
     server = new WiFiServer(80);
     server->begin();
     Serial.println("Server started");
 }
 
-void HAL_WebServerLoop() {
+void HAL::HAL_WebServerLoop() {
     wifiServerLoop(server);
 }
 

@@ -17,28 +17,28 @@ bool APP_FuncGenChangeRequest(enum Char_UUID_Index fvt, T val) {
     switch (fvt) {
         case Char_UUID_Index::WAVEFORM:
             if (APP_SetWaveForm((Waveform)val) == NO_ERROR) {
-                HAL_ReactToValueChange(Char_UUID_Index::WAVEFORM);
+                HAL::HAL_ReactToValueChange(Char_UUID_Index::WAVEFORM);
                 debug_print("Waveform changed to %d.\n", val);
                 return true;
             }
             else return false;
         case Char_UUID_Index::PULSEWIDTH:
             if (APP_SetPulseWidth(val) == NO_ERROR) {
-                HAL_ReactToValueChange(Char_UUID_Index::WAVEFORM);
+                HAL::HAL_ReactToValueChange(Char_UUID_Index::WAVEFORM);
                 debug_print("Pulsewidth changed to %d.\n", val);
                 return true;
             }
             else return false;
         case Char_UUID_Index::FREQUENCY:
             if (APP_SetFreq(val) == NO_ERROR) {
-                HAL_ReactToValueChange(Char_UUID_Index::FREQUENCY);
+                HAL::HAL_ReactToValueChange(Char_UUID_Index::FREQUENCY);
                 debug_print("Frequency changed to %f.\n", val);
                 return true;
             }
             else return false;
         case Char_UUID_Index::AMPLITUDE:
             if (APP_SetAmp(val) == NO_ERROR) {
-                HAL_ReactToValueChange(Char_UUID_Index::AMPLITUDE);
+                HAL::HAL_ReactToValueChange(Char_UUID_Index::AMPLITUDE);
                 debug_print("Amplitude changed to %f.\n", val);
                 return true;
             }

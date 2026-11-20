@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #define PIN_FGENOUTPUT_READ 2
 #define PIN_FGENOUTPUT_LED 4
 
@@ -8,4 +10,10 @@
 #define PIN_SPI_CLK_1      (uint8_t)18
 #define PIN_SPI_CS_1       (uint8_t)5
 
-void HAL_SetupGPIO();
+namespace HAL {
+    void HAL_SetupGPIO();
+    void HAL_SetPinDigital(uint8_t pin, uint8_t val);
+    void HAL_SetPinPWN(uint8_t pin, uint8_t val);
+}
+
+

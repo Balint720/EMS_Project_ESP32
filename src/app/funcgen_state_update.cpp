@@ -47,7 +47,7 @@ static void advanceSquareWave(void*) {
     }
 
     APP_CurrWave.gotoNextState();
-    // HAL_SetDirectDAC(APP_CurrWave.getOutput());
+    // HAL::HAL_SetDirectDAC(APP_CurrWave.getOutput());
     scheduleNextState(false);
 }
 
@@ -123,5 +123,5 @@ void APP_StopSquareWaveTimer() {
     }
     APP_CurrWave.turnOff();
     APP_CurrWave.gotoGivenState(NEUTRAL);
-    // HAL_SetDirectDAC(APP_CurrWave.getOutput());
+    // HAL::HAL_SetDirectDAC(APP_CurrWave.getOutput());
 }

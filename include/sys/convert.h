@@ -125,6 +125,6 @@ inline static uint16_t combine8to16(uint8_t a, uint8_t b) {
 }
 
 inline static uint64_t frequencyToMicroseconds(double frequency) {
-    double val = (frequency/kTimer1Frequency) * 1000;
+    double val = (frequency/HAL::kTimer1Frequency) * 1000;
     return static_cast<int>(val);
 }

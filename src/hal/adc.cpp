@@ -20,11 +20,11 @@ static void setupFgenRead() {
     //ledcAttach(PIN_FGENOUTPUT_LED, freq, resolution);
 }
 
-void HAL_SetupADC() {
+void HAL::HAL_SetupADC() {
     setupFgenRead();
 }
 
-void HAL_LoopADC() {
+void HAL::HAL_LoopADC() {
     fGenOutputmV = analogReadMilliVolts(PIN_FGENOUTPUT_READ);
     fGenOutput = analogRead(PIN_FGENOUTPUT_READ);
     ledcWrite(channel, fGenOutput);

@@ -11,7 +11,7 @@
 
 #define SPI_DATA_MAX_CHUNK_SIZE 1024
 
-int HAL_SetupSPI() {
+int HAL::HAL_SetupSPI() {
     setupSPI_A();
     setupSPI_Flash();
 
@@ -24,7 +24,7 @@ int HAL_SetupSPI() {
 
 SPIClass *SPI_A = nullptr;
 
-void setupSPI_A() {
+void HAL::setupSPI_A() {
     SPI_A = new SPIClass();
     SPI_A->begin(
         PIN_SPI_CLK_1,
@@ -84,7 +84,7 @@ void dumpPartitions() {
     Serial.println("========================");
 }
 
-int setupSPI_Flash() {
+int HAL::setupSPI_Flash() {
     recip_part = esp_partition_find_first(RECIPES_PARTITION);
     vTaskDelay(1);
     // if (recip_part == NULL) debug_print("Recipe partition not found!\n");
@@ -176,7 +176,7 @@ static void printDebugError(esp_err_t err) {
     }
 }
 
-int writeRecipe(int recipeIndex, const funcGenRecipe_st *recipe) {
+int HAL::writeRecipe(int recipeIndex, const funcGenRecipe_st *recipe) {
     if (recipeIndex >= MAX_RECIPE_COUNT) {
         debug_print("Recipe index exceeds max recipe count\n");
         return -2;
@@ -257,7 +257,7 @@ int writeRecipe(int recipeIndex, const funcGenRecipe_st *recipe) {
     return 0;
 }
 
-int readRecipe(int recipeIndex, funcGenRecipe_st *outRecipe) {
+int HAL::readRecipe(int recipeIndex, funcGenRecipe_st *outRecipe) {
     int x = headerCheck(recipeIndex);
     if (x == 0) {
         size_t offset = recipeOffset(recipeIndex) + SECTOR_HEADER_SIZE;
@@ -286,10 +286,10 @@ int readRecipe(int recipeIndex, funcGenRecipe_st *outRecipe) {
     else return x;
 }
 
-int HAL_SaveRecipeToFlash(const funcGenRecipe_st *recipe, int index) {
+int HAL::HAL_SaveRecipeToFlash(const funcGenRecipe_st *recipe, int index) {
     return writeRecipe(index, recipe);
 }
 
-int HAL_LoadRecipeFromFlash(int index, funcGenRecipe_st* out) {
+int HAL::HAL_LoadRecipeFromFlash(int index, funcGenRecipe_st* out) {
     return readRecipe(index, out);
 }

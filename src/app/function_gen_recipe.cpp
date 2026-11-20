@@ -21,19 +21,19 @@ static unsigned long int lastCheck = millis();
 */
 static void updateBtValsToVars() {
     funcGenVars_st *helper = APP_GetCurrentRecipeStep();
-    HAL_BT_SetValueDouble(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_AMPLITUDE, helper->amp);
-    HAL_BT_SetValueInt(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_PULSEWIDTH, helper->pulseWidth);
-    HAL_BT_SetValueDouble(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_FREQUENCY, helper->freq);
-    HAL_BT_SetValueInt(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_WAVEFORM, (int)helper->waveform);
-    HAL_BT_SetValueInt(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_TIME, APP_GetCurrentStepTime());
-    HAL_BT_SetValueInt(Service_UUID_Index::SETTINGS, Char_UUID_Index::RECIPE_INFO, combine8to16(selectedRecipe, selectedStep));
+    HAL::HAL_BT_SetValueDouble(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_AMPLITUDE, helper->amp);
+    HAL::HAL_BT_SetValueInt(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_PULSEWIDTH, helper->pulseWidth);
+    HAL::HAL_BT_SetValueDouble(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_FREQUENCY, helper->freq);
+    HAL::HAL_BT_SetValueInt(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_WAVEFORM, (int)helper->waveform);
+    HAL::HAL_BT_SetValueInt(Service_UUID_Index::RECIPE, Char_UUID_Index::RECIPE_TIME, APP_GetCurrentStepTime());
+    HAL::HAL_BT_SetValueInt(Service_UUID_Index::SETTINGS, Char_UUID_Index::RECIPE_INFO, combine8to16(selectedRecipe, selectedStep));
 }
 
 void APP_SetupGlobalRecipe() {
     currRecipe = new funcGenRecipe_st();
     selectedStep = 0;
     selectedRecipe = 0;
-    int x = HAL_LoadRecipeFromFlash(selectedRecipe, currRecipe);
+    int x = HAL::HAL_LoadRecipeFromFlash(selectedRecipe, currRecipe);
     if (x == 0) {
         debug_print("Recipe found at index 0, loaded.\n");
     }
@@ -97,11 +97,11 @@ int APP_SetCurrentStepTime(time_t newTime) {
 }
 
 int APP_SaveCurrentRecipe() {
-    return HAL_SaveRecipeToFlash(currRecipe);
+    return HAL::HAL_SaveRecipeToFlash(currRecipe);
 }
 
 int APP_LoadCurrentRecipe(int index) {
-    return HAL_LoadRecipeFromFlash(index, currRecipe);
+    return HAL::HAL_LoadRecipeFromFlash(index, currRecipe);
 }
 
 int APP_GetRecipeSelectionNumber() {
@@ -118,7 +118,7 @@ bool APP_SetRecipeSelectionNumber(unsigned int num) {
     }
     if (selectedRecipe != num) {
         selectedRecipe = num;
-        if (HAL_LoadRecipeFromFlash(selectedRecipe, currRecipe) != 0) {
+        if (HAL::HAL_LoadRecipeFromFlash(selectedRecipe, currRecipe) != 0) {
             debug_print("Didn't find recipe at index %d, creating empty one\n", selectedRecipe);
             *currRecipe = {};
             currRecipe->stepCount = 1;
@@ -193,7 +193,7 @@ bool APP_ActionOnRecipe(uint8_t command, uint8_t value) {
         case ABORT_RECIPE:
             return (APP_StopFgenRecipe() == 0);
         case SAVE_RECIPE_TO_FLASH:
-            if (HAL_SaveRecipeToFlash(currRecipe, selectedRecipe) == 0) {
+            if (HAL::HAL_SaveRecipeToFlash(currRecipe, selectedRecipe) == 0) {
                 debug_print("Recipe save to %d index successful.\n", selectedRecipe);
                 return true;
             }

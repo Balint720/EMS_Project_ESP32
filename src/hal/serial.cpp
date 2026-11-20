@@ -10,6 +10,7 @@
 #include "hal/hal.h"
 #include "hal/pot.h"
 #include "hal/funcgen_chip.h"
+#include "hal/serial.h"
 
 namespace SerialCommands {
     namespace Commands {
@@ -114,29 +115,29 @@ static Errors setSerialValue(const char* name, const char* text, Char_UUID_Index
         double value;
         if (!parseNumber(text, &value)) return INVALID_INPUT;
         *changedValue = RESISTANCE;
-        return setValueOfResistanceScaled(value);
+        return HAL::setValueOfResistanceScaled(value);
     }
 
     return INVALID_INPUT;
 }
 
 static void resetFunctionGenerator() {
-    resetAD9833();
+    HAL::resetAD9833();
     /*turnOff();
     APP_SetWaveForm(SQUARE);
     APP_SetPulseWidth(0);
     APP_SetFreq(1);
     APP_SetAmp(5.0);
 
-    HAL_ReactToValueChange(FG_STATE);
-    HAL_ReactToValueChange(WAVEFORM);
-    HAL_ReactToValueChange(PULSEWIDTH);
-    HAL_ReactToValueChange(FREQUENCY);
-    HAL_ReactToValueChange(AMPLITUDE);
+    HAL::HAL_ReactToValueChange(FG_STATE);
+    HAL::HAL_ReactToValueChange(WAVEFORM);
+    HAL::HAL_ReactToValueChange(PULSEWIDTH);
+    HAL::HAL_ReactToValueChange(FREQUENCY);
+    HAL::HAL_ReactToValueChange(AMPLITUDE);
     */
 }
 
-void HAL_LoopSerialRead() {
+void HAL::HAL_LoopSerialRead() {
     readSerialCommands();
 }
 
@@ -171,7 +172,7 @@ static void readSerialCommands() {
         const bool turnOnRequested = strcmp(command, SerialCommands::Commands::kOn) == 0;
         const Errors result = turnOnRequested ? APP_TurnOnFgen() : APP_TurnOffFgen();
         if (result == NO_ERROR) {
-            HAL_ReactToValueChange(FG_STATE);
+            HAL::HAL_ReactToValueChange(FG_STATE);
             Serial.println(turnOnRequested ? "Turned on successfully." : "Turned off successfully.");
         } else {
             Serial.println("Error changing output state.");
@@ -212,7 +213,7 @@ static void readSerialCommands() {
         return;
     }
 
-    HAL_ReactToValueChange(changedValue);
+    HAL::HAL_ReactToValueChange(changedValue);
     Serial.println("Value updated successfully.");
     printFuncGenVars();
     printPotMeterRes();

@@ -9,18 +9,18 @@ static constexpr double kUnitResVal = kMaxResVal/255.0;
 
 static MCP_POT *pot;
 
-void initPot() {
-    pot = new MCP_POT(25, -1, -1, SPI_A);
+void HAL::initPot() {
+    pot = new MCP_POT(25, -1, -1, HAL::SPI_A);
 
     pot->begin(24u);
 }
 
-Errors setValueOfResistance(uint8_t resistance) {
+Errors HAL::setValueOfResistance(uint8_t resistance) {
     pot->setValue(resistance);
     return NO_ERROR;
 }
 
-Errors setValueOfResistanceScaled(double resistance)
+Errors HAL::setValueOfResistanceScaled(double resistance)
 {
     if (resistance < 0.0) return INVALID_INPUT;
     uint8_t scaled = static_cast<uint8_t>(std::min((resistance / kMaxResVal)*255.0,255.0));
@@ -28,10 +28,10 @@ Errors setValueOfResistanceScaled(double resistance)
     return NO_ERROR;
 }
 
-double getValueOfResistance() {
+double HAL::getValueOfResistance() {
     return pot->getValue() * kUnitResVal;
 }
 
-void HAL_SetupPotmeter() {
+void HAL::HAL_SetupPotmeter() {
     initPot();
 }

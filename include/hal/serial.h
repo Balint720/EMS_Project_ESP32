@@ -1,3 +1,5 @@
 #pragma once
 
-void HAL_LoopSerialRead();
+namespace HAL {
+    void HAL_LoopSerialRead();
+}
