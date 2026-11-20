@@ -16,6 +16,7 @@
 #include "hal/timer.h"
 #include "app/funcgen_state_update.h"
 #include <hal/dac.h>
+#include <hal/i2c.h>
 
 
 void HAL_Setup() {
@@ -43,9 +44,12 @@ void HAL_Setup() {
     debug_print("Setting up Function Generator Chip...\n");
     HAL_SetupFuncGenChip();
     debug_print("Function Generator chip setup completed!\n");
-    // debug_print("Setting up DAC...\n");
-    // HAL_SetupDAC();
-    // debug_print("DAC setup completed!\n");
+    debug_print("Setting up I2C...\n");
+    HAL_SetupI2C();
+    debug_print("I2C setup completed!\n");
+    debug_print("Setting up DAC...\n");
+    HAL_SetupDAC();
+    debug_print("DAC setup completed!\n");
 }
 
 static unsigned long timer = millis();

@@ -6,7 +6,7 @@
 static MCP4725 *dac_chip;
 
 void initMCP4725() {
-    dac_chip = new MCP4725{0b000, HAL_DigAnalogConvWire};
+    dac_chip = new MCP4725{0x60, HAL_DigAnalogConvWire};
 
     dac_chip->begin();
 }
