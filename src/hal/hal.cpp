@@ -79,6 +79,7 @@ void HAL_ReactToValueChange(Char_UUID_Index cI) {
         case AMPLITUDE:
             // setValueOfResistance(calcResistorValueToSet(getAmp()));
             //setValueOfResistance((getAmp()/10000)*255);
+            APP_CurrWave.set_max_val(static_cast<uint16_t>(getAmp()));
             break;
         case WAVEFORM:
             //APP_SetWaveFormAD9833(getWaveform());

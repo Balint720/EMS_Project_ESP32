@@ -1,11 +1,12 @@
 #include "hal/dac.h"
 
 #include <MCP4725.h>
+#include "hal/i2c.h"
 
 static MCP4725 *dac_chip;
 
 void initMCP4725() {
-    dac_chip = new MCP4725{0b000};
+    dac_chip = new MCP4725{0b000, HAL_DigAnalogConvWire};
 
     dac_chip->begin();
 }
